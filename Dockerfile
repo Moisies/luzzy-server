@@ -4,7 +4,7 @@ WORKDIR /app
 # Instalar dependencias
 COPY package.json bun.lock ./
 COPY integrations/prisma/schema.prisma ./integrations/prisma/schema.prisma
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copiar codigo
 COPY . .
