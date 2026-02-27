@@ -1,166 +1,85 @@
-import {serve} from "bun";
-import z from "zod";
-import messaging from "./integrations/firebase/messaging.ts";
-import db from "./integrations/prisma/db.ts";
-import {checkAuth, signToken, unauthorized} from "./utils/auth.ts";
+/**
+ * index.ts — Luzzy AI Agent Server
+ *
+ * Servidor Bun que actúa como agente de IA para responder mensajes SMS
+ * en nombre del usuario real, usando Google Gemini + el ADN del usuario.
+ *
+ * Endpoints:
+ *   POST   /api/register            → Registrar dispositivo Android
+ *   POST   /api/auth/google-login   → Login con Google
+ *   POST   /api/messages            → Procesar mensaje entrante (agente IA)
+ *   GET    /api/settings            → Obtener configuración/ADN
+ *   POST   /api/settings            → Actualizar configuración/ADN
+ *   GET    /api/appointments        → Listar citas agendadas por el agente
+ *   DELETE /api/appointments/:id    → Cancelar una cita
+ */
 
+import { serve } from "bun";
+import { handleRegister, handleGoogleLogin } from "./controllers/authController.ts";
+import { handleMessages } from "./controllers/messagesController.ts";
+import { getSettings, updateSettings } from "./controllers/settingsController.ts";
+import {
+  listAppointments,
+  handleDeleteAppointment,
+} from "./controllers/appointmentsController.ts";
+import { env } from "./config/env.ts";
+
+// ─── Servidor ─────────────────────────────────────────────────────────────────
 
 const server = serve({
-    port: 3000,
-    routes: {
-        "/api/settings": {
-            POST: async req => {
-                let phone = ""
-                try {
-                    phone = await checkAuth(req)
-                } catch (e) {
-                    return unauthorized();
-                }
-                const schema = z.record(z.string(), z.any());
-                try {
-                    const body = await req.json();
-                    const settings = schema.parse(body);
-                    await db.user.update({
-                        where: {phone},
-                        data: {settings}
-                    });
-                } catch (e) {
-                    return new Response(JSON.stringify({error: (e as Error).message}), {
-                        status: 400,
-                        headers: {"Content-Type": "application/json"}
-                    });
-                }
-                return Response.json('OK');
-            },
-            GET: async req => {
-                let phone = ""
-                try {
-                    phone = await checkAuth(req)
-                } catch (e) {
-                    return unauthorized();
-                }
-                const {settings} = await db.user.findUniqueOrThrow({where: {phone}})
-                return Response.json(settings)
-            }
-        },
-        "/api/register": {
-            POST: async req => {
-                try {
-                    const body = await req.json();
-                    const schema = z.object({
-                        registrationToken: z.string(),
-                        phone: z.string()
-                    });
-                    const {registrationToken, phone} = schema.parse(body);
-                    await db.user.upsert({
-                        where: {phone},
-                        create: {phone, registrationToken},
-                        update: {phone, registrationToken}
-                    });
-                    const token = await signToken(phone);
-                    return Response.json({token});
-                } catch (e) {
-                    return new Response(JSON.stringify({error: (e as Error).message}), {
-                        status: 400,
-                        headers: {"Content-Type": "application/json"}
-                    });
-                }
-            }
-        },
-        "/api/auth/google-login": {
-            POST: async req => {
-                try {
-                    const body = await req.json();
-                    const schema = z.object({
-                        email: z.string().email(),
-                        deviceToken: z.string(),
-                        displayName: z.string().optional(),
-                        photoUrl: z.string().optional()
-                    });
-                    const {email, deviceToken, displayName, photoUrl} = schema.parse(body);
-                    const phone = email;
-                    const registrationToken = deviceToken;
-                    await db.user.upsert({
-                        where: {phone},
-                        create: {phone, registrationToken},
-                        update: {registrationToken}
-                    });
-                    const token = await signToken(phone);
-                    return Response.json({
-                        token,
-                        user: {
-                            email,
-                            displayName: displayName || null,
-                            photoUrl: photoUrl || null
-                        }
-                    });
-                } catch (e) {
-                    console.error("Google login error:", e);
-                    return new Response(JSON.stringify({error: (e as Error).message}), {
-                        status: 400,
-                        headers: {"Content-Type": "application/json"}
-                    });
-                }
-            }
-        },
-        "/api/messages": {
-            POST: async req => {
-                let phone = ""
-                try {
-                    phone = await checkAuth(req)
-                } catch (e) {
-                    return unauthorized();
-                }
-                const schema = z.object({
-                    from: z.string(),
-                    to: z.string(),
-                    messages: z.array(
-                        z.object({
-                            from: z.string(),
-                            message: z.string(),
-                            timestamp: z.string()
-                        })
-                    )
-                });
-                try {
-                    const body = await req.json();
-                    const {from, to, messages} = schema.parse(body);
-                    if (to !== phone) {
-                        return unauthorized();
-                    }
-                    const {registrationToken} = await db.user.findUniqueOrThrow({
-                        where: {phone: to},
-                        select: {registrationToken: true}
-                    });
-                    if (!!messages[messages.length - 1]?.message) {
-                        await messaging.send({
-                            data: {
-                                to: from,
-                                message: `Time: ${new Date().toLocaleTimeString()}`,
-                            },
-                            token: registrationToken
-                        });
-                        return Response.json('Answered');
-                    }
-                    return Response.json('No Answered');
-                } catch (e) {
-                    return new Response(JSON.stringify({error: (e as Error).message}), {
-                        status: 400,
-                        headers: {"Content-Type": "application/json"}
-                    });
-                }
-            }
-        }
+  port: env.PORT,
+
+  routes: {
+    // Autenticación y registro de dispositivo
+    "/api/register": {
+      POST: handleRegister,
     },
-    fetch(req) {
-        // Catch-all GET route: respond OK for any unmatched GET path
-        if (req.method === "GET") {
-            return new Response("OK");
-        }
-        // Default 404 for other unmatched methods/paths
-        return new Response("Not Found", { status: 404 });
+    "/api/auth/google-login": {
+      POST: handleGoogleLogin,
+    },
+
+    // Agente IA — procesamiento de mensajes SMS entrantes
+    "/api/messages": {
+      POST: handleMessages,
+    },
+
+    // Configuración del usuario (ADN + preferencias generales)
+    "/api/settings": {
+      GET: getSettings,
+      POST: updateSettings,
+    },
+
+    // Citas agendadas automáticamente por el agente IA
+    "/api/appointments": {
+      GET: listAppointments,
+    },
+  },
+
+  /**
+   * fetch() maneja rutas dinámicas y cualquier ruta no declarada arriba.
+   * Aquí procesamos: DELETE /api/appointments/:id
+   */
+  async fetch(req) {
+    const url = new URL(req.url);
+    const { pathname } = url;
+
+    // DELETE /api/appointments/:id → cancelar cita
+    const appointmentMatch = pathname.match(/^\/api\/appointments\/([^/]+)$/);
+    if (appointmentMatch && req.method === "DELETE") {
+      return handleDeleteAppointment(req, appointmentMatch[1]!);
     }
+
+    // Health check
+    if (req.method === "GET") {
+      return new Response(
+        JSON.stringify({ status: "ok", server: "Luzzy AI Agent" }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    return new Response("Not Found", { status: 404 });
+  },
 });
 
-console.log(`Server running at http://localhost:${server.port}`);
-
+console.log(`🚀 Luzzy AI Agent Server corriendo en http://localhost:${server.port}`);
+console.log(`🤖 Modelo Gemini: ${env.GEMINI_MODEL}`);
