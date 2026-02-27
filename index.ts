@@ -79,6 +79,14 @@ const server = serve({
       });
     }
 
+    // Política de privacidad
+    if (req.method === "GET" && (pathname === "/privacy" || pathname === "/privacidad" || pathname === "/politicas")) {
+      const file = Bun.file(new URL("./public/privacy.html", import.meta.url));
+      return new Response(file, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
     // Health check
     if (req.method === "GET" && pathname === "/health") {
       return new Response(
