@@ -57,7 +57,9 @@ const server = serve({
 
   /**
    * fetch() maneja rutas dinámicas y cualquier ruta no declarada arriba.
-   * Aquí procesamos: DELETE /api/appointments/:id
+   * Aquí procesamos:
+   *   GET  /                        → Landing page HTML
+   *   DELETE /api/appointments/:id  → Cancelar cita
    */
   async fetch(req) {
     const url = new URL(req.url);
@@ -69,8 +71,16 @@ const server = serve({
       return handleDeleteAppointment(req, appointmentMatch[1]!);
     }
 
+    // Landing page
+    if (req.method === "GET" && (pathname === "/" || pathname === "/index.html")) {
+      const file = Bun.file(new URL("./public/index.html", import.meta.url));
+      return new Response(file, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
     // Health check
-    if (req.method === "GET") {
+    if (req.method === "GET" && pathname === "/health") {
       return new Response(
         JSON.stringify({ status: "ok", server: "Luzzy AI Agent" }),
         { headers: { "Content-Type": "application/json" } }
