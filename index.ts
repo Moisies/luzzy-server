@@ -87,6 +87,14 @@ const server = serve({
       });
     }
 
+    // Eliminación de cuenta
+    if (req.method === "GET" && (pathname === "/delete-account" || pathname === "/eliminar-cuenta")) {
+      const file = Bun.file(new URL("./public/delete-account.html", import.meta.url));
+      return new Response(file, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
     // Health check
     if (req.method === "GET" && pathname === "/health") {
       return new Response(

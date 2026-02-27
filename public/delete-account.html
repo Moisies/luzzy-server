@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliminación de Cuenta — Luzzy</title>
+  <meta name="description" content="Solicita la eliminación de tu cuenta y datos personales en Luzzy." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #1A8FDE;
+      --orange: #F05A28;
+      --purple: #7B7CC8;
+      --red:    #E05050;
+      --dark:   #080B14;
+      --dark2:  #0F1220;
+      --dark3:  #141829;
+      --glass:  rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --text:   #F0EEF8;
+      --muted:  rgba(240,238,248,0.55);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    .glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(224,80,80,0.06) 0%, transparent 70%);
+      top: -150px; left: -100px;
+      pointer-events: none;
+    }
+
+    /* ── Nav ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 0;
+      background: rgba(8,11,20,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-img  { width: 36px; height: 36px; border-radius: 9px; object-fit: cover; }
+    .logo-type {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 600;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, #F0EEF8 30%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-back {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 13px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    /* ── Layout ──────────────────────────────────────── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-header {
+      padding-top: 120px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 56px;
+    }
+    .page-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .page-title em { font-style: italic; color: var(--purple); }
+    .page-meta { font-size: 13px; color: var(--muted); }
+
+    /* ── Body ────────────────────────────────────────── */
+    .body-wrap { padding-bottom: 100px; }
+
+    .section { margin-bottom: 48px; }
+
+    .section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 400;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section h2 i { font-size: 18px; color: var(--orange); width: 24px; text-align: center; }
+
+    .section p {
+      font-size: 15px; color: var(--muted);
+      line-height: 1.85; margin-bottom: 14px;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    /* ── Steps ───────────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+    .step-row {
+      display: flex; gap: 18px; align-items: flex-start;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      transition: border-color 0.2s;
+    }
+    .step-row:hover { border-color: rgba(26,143,222,0.25); }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; color: #fff;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-content h3 {
+      font-size: 15px; font-weight: 500;
+      margin-bottom: 4px; color: var(--text);
+    }
+    .step-content p { font-size: 14px; color: var(--muted); margin: 0; line-height: 1.65; }
+
+    /* ── Data table ──────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td:first-child { color: var(--text); font-weight: 400; white-space: nowrap; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    }
+    .badge-red    { background: rgba(224,80,80,0.15); color: #E07070; }
+    .badge-yellow { background: rgba(240,180,50,0.15); color: #D4A830; }
+    .badge-green  { background: rgba(76,175,80,0.15); color: #6ECF72; }
+
+    /* ── Warning box ─────────────────────────────────── */
+    .warning-box {
+      background: rgba(224,80,80,0.07);
+      border: 1px solid rgba(224,80,80,0.2);
+      border-left: 3px solid var(--red);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      font-size: 14px; color: var(--muted); line-height: 1.75;
+    }
+    .warning-box strong { color: #E07070; }
+
+    .info-box {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      font-size: 14px; color: var(--muted); line-height: 1.75;
+    }
+    .info-box strong { color: var(--text); font-weight: 500; }
+
+    /* ── Email CTA ───────────────────────────────────── */
+    .email-cta {
+      background: var(--dark3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 40px;
+      display: flex; align-items: center; gap: 28px;
+      margin-top: 8px;
+    }
+    .email-icon {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      background: rgba(224,80,80,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; color: var(--red);
+      flex-shrink: 0;
+    }
+    .email-body h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 400; margin-bottom: 6px;
+    }
+    .email-body p { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+    .btn-delete {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #c03030, #a02020);
+      color: #fff; padding: 12px 28px;
+      border-radius: 100px; text-decoration: none;
+      font-size: 14px; font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(200,50,50,0.2);
+    }
+    .btn-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(200,50,50,0.3);
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-note { font-size: 12px; color: rgba(240,238,248,0.3); }
+
+    @media (max-width: 600px) {
+      .page-header { padding-top: 100px; padding-bottom: 36px; }
+      .email-cta { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="inner">
+      <a href="/" class="nav-logo">
+        <img src="/logo.webp" alt="Luzzy" class="logo-img" />
+        <span class="logo-type">Luzzy</span>
+      </a>
+      <a href="/" class="nav-back">
+        <i class="fa-solid fa-arrow-left"></i>
+        Volver al inicio
+      </a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="container">
+    <div class="page-header">
+      <div class="page-label">Cuenta</div>
+      <h1 class="page-title">Eliminar mi <em>cuenta</em></h1>
+      <p class="page-meta">Puedes solicitar la eliminación completa de tu cuenta y todos tus datos en cualquier momento.</p>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="container">
+    <div class="body-wrap">
+
+      <!-- Aviso -->
+      <div class="section">
+        <div class="warning-box">
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> Acción irreversible.</strong>
+          La eliminación de tu cuenta es permanente. Una vez procesada, no podremos recuperar tus datos ni restaurar tu perfil.
+        </div>
+      </div>
+
+      <!-- Cómo solicitar -->
+      <div class="section">
+        <h2><i class="fa-solid fa-list-check"></i>Cómo solicitar la eliminación</h2>
+        <p>Puedes eliminar tu cuenta de dos formas:</p>
+
+        <div class="steps">
+          <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h3>Desde la app (opción más rápida)</h3>
+              <p>Abre Luzzy → toca el menú <strong>⋮</strong> → <strong>Ajustes</strong> → <strong>Cuenta</strong> → <strong>Eliminar cuenta</strong>. La eliminación se procesa de forma inmediata.</p>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h3>Por correo electrónico</h3>
+              <p>Envía un correo a <strong>privacidad@luzzy.app</strong> con el asunto <em>"Solicitud de eliminación de cuenta"</em> indicando el número de teléfono registrado. Procesamos la solicitud en un máximo de <strong>30 días</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Qué se elimina -->
+      <div class="section">
+        <h2><i class="fa-solid fa-trash-can"></i>Qué se elimina y cuándo</h2>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Dato</th>
+              <th>¿Se elimina?</th>
+              <th>Plazo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Número de teléfono y cuenta</td>
+              <td><span class="badge badge-red"><i class="fa-solid fa-xmark"></i> Eliminado</span></td>
+              <td>Inmediato</td>
+            </tr>
+            <tr>
+              <td>Token FCM (notificaciones)</td>
+              <td><span class="badge badge-red"><i class="fa-solid fa-xmark"></i> Eliminado</span></td>
+              <td>Inmediato</td>
+            </tr>
+            <tr>
+              <td>Perfil profesional (ADN)</td>
+              <td><span class="badge badge-red"><i class="fa-solid fa-xmark"></i> Eliminado</span></td>
+              <td>Inmediato</td>
+            </tr>
+            <tr>
+              <td>Configuración y preferencias</td>
+              <td><span class="badge badge-red"><i class="fa-solid fa-xmark"></i> Eliminado</span></td>
+              <td>Inmediato</td>
+            </tr>
+            <tr>
+              <td>Historial de conversaciones IA</td>
+              <td><span class="badge badge-red"><i class="fa-solid fa-xmark"></i> Eliminado</span></td>
+              <td>Inmediato</td>
+            </tr>
+            <tr>
+              <td>Citas agendadas por la IA</td>
+              <td><span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> Eliminado</span></td>
+              <td>30 días (auditoría)</td>
+            </tr>
+            <tr>
+              <td>Mensajes SMS/MMS en el dispositivo</td>
+              <td><span class="badge badge-green"><i class="fa-solid fa-mobile-screen"></i> En tu dispositivo</span></td>
+              <td>Los controla Android — elimínalos manualmente desde la app</td>
+            </tr>
+            <tr>
+              <td>Datos de Google (Sign-In, Billing)</td>
+              <td><span class="badge badge-green"><i class="fa-brands fa-google"></i> Gestión de Google</span></td>
+              <td>Administrados por Google según sus políticas</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="info-box" style="margin-top:20px;">
+          <strong>Nota sobre SMS:</strong> Luzzy es una app de mensajería predeterminada. Los SMS/MMS se almacenan en la base de datos del sistema Android, no en nuestros servidores. Para eliminarlos de tu dispositivo, hazlo manualmente desde la app antes de desinstalarla.
+        </div>
+      </div>
+
+      <!-- Consecuencias -->
+      <div class="section">
+        <h2><i class="fa-solid fa-circle-info"></i>Qué sucede tras la eliminación</h2>
+        <div class="steps">
+          <div class="step-row">
+            <div class="step-num"><i class="fa-solid fa-robot" style="font-size:12px;"></i></div>
+            <div class="step-content">
+              <h3>El agente de IA deja de funcionar</h3>
+              <p>Todas las respuestas automáticas y la agenda de citas se desactivan de inmediato.</p>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num"><i class="fa-solid fa-bell-slash" style="font-size:12px;"></i></div>
+            <div class="step-content">
+              <h3>Sin más notificaciones push</h3>
+              <p>Al eliminar el token FCM no recibirás ninguna notificación de Luzzy en ese dispositivo.</p>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-num"><i class="fa-solid fa-rotate-left" style="font-size:12px;"></i></div>
+            <div class="step-content">
+              <h3>Puedes crear una cuenta nueva</h3>
+              <p>Puedes volver a registrarte en cualquier momento con el mismo número de teléfono. Empezarás desde cero, sin datos anteriores.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA por email -->
+      <div class="section">
+        <h2><i class="fa-solid fa-envelope"></i>Solicitar eliminación por correo</h2>
+        <p>Si no puedes acceder a la app, envíanos un correo con tu número de teléfono registrado y lo gestionamos en un máximo de 30 días.</p>
+        <div class="email-cta">
+          <div class="email-icon"><i class="fa-solid fa-trash-can"></i></div>
+          <div class="email-body">
+            <h3>Enviar solicitud de eliminación</h3>
+            <p>Incluye tu número de teléfono en el mensaje. Te confirmaremos la eliminación por email en un máximo de 30 días.</p>
+            <a href="mailto:privacidad@luzzy.app?subject=Solicitud%20de%20eliminaci%C3%B3n%20de%20cuenta&body=Hola%2C%20quiero%20solicitar%20la%20eliminaci%C3%B3n%20de%20mi%20cuenta%20de%20Luzzy.%0A%0AMi%20n%C3%BAmero%20de%20tel%C3%A9fono%20registrado%20es%3A%20%2B" class="btn-delete">
+              <i class="fa-solid fa-paper-plane"></i>
+              Enviar solicitud
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Más info -->
+      <div class="section">
+        <div class="info-box">
+          <strong>¿Tienes más preguntas?</strong> Consulta nuestra
+          <a href="/privacy" style="color:var(--blue);text-decoration:none;font-weight:500;">Política de Privacidad</a>
+          para más información sobre cómo gestionamos tus datos, o escríbenos a
+          <a href="mailto:privacidad@luzzy.app" style="color:var(--blue);text-decoration:none;font-weight:500;">privacidad@luzzy.app</a>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <a href="/" class="footer-brand">
+          <img src="/logo.webp" alt="Luzzy" class="logo-img" />
+          <span class="logo-type" style="font-size:20px;">Luzzy</span>
+        </a>
+        <span class="footer-note">© 2026 Luzzy · <a href="/privacy" style="color:rgba(240,238,248,0.3);text-decoration:none;">Política de Privacidad</a></span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
