@@ -12,7 +12,7 @@ export const env = {
 
   // Google Gemini
   GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
-  GEMINI_MODEL: process.env.GEMINI_MODEL ?? "gemini-1.5-flash",
+  GEMINI_MODEL: process.env.GEMINI_MODEL ?? "gemini-2.0-flash",
 
   // Firebase Admin
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ?? "",
