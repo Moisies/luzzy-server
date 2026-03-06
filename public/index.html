@@ -1,777 +1,629 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="overflow-x:hidden">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Luzzy — Tu asistente de IA que trabaja mientras tú trabajas</title>
-  <meta name="description" content="Luzzy responde a tus clientes, agenda citas y cierra ventas automáticamente. El asistente de IA diseñado para mujeres que ofrecen servicios de compañía y bienestar." />
+  <title>Luzzy — Mensajería SMS con IA</title>
+  <meta name="description" content="Luzzy es tu app SMS predeterminada con agente de IA integrado. Responde a tus clientes, agenda citas y sincroniza mensajes en todos tus dispositivos." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 
   <style>
-    /* ── Reset & base ──────────────────────────────────────────── */
+    /* ── Reset ─────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
 
+    /* ── Variables ─────────────────────────────────────────────── */
     :root {
-      --blue:    #1A8FDE;
-      --orange:  #F05A28;
-      --purple:  #7B7CC8;
-      --dark:    #080B14;
-      --dark2:   #0F1220;
-      --dark3:   #141829;
-      --glass:   rgba(255,255,255,0.04);
-      --border:  rgba(255,255,255,0.08);
-      --text:    #F0EEF8;
-      --muted:   rgba(240,238,248,0.55);
+      --bg:       rgb(48, 44, 68);
+      --bg-dark:  rgb(35, 32, 52);
+      --bg-card:  rgba(255,255,255,0.05);
+      --primary:  #da462a;
+      --primary2: #a92a00;
+      --secondary:#625990;
+      --accent:   #cecdf7;
+      --text:     rgba(255,255,255,0.9);
+      --muted:    rgba(255,255,255,0.55);
+      --border:   rgba(255,255,255,0.1);
+      --shadow:   rgba(0,0,0,0.4);
     }
 
-    html { scroll-behavior: smooth; }
-
+    /* ── Base ──────────────────────────────────────────────────── */
     body {
-      background: var(--dark);
+      background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-weight: 300;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 400;
       line-height: 1.7;
       overflow-x: hidden;
     }
 
-    /* ── Grain overlay ─────────────────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.4;
-    }
-
-    /* ── Ambient glow ──────────────────────────────────────────── */
-    .glow-1 {
-      position: fixed;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(26,143,222,0.12) 0%, transparent 70%);
-      top: -200px; left: -150px;
-      pointer-events: none;
-      animation: drift 18s ease-in-out infinite alternate;
-    }
-    .glow-2 {
-      position: fixed;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(240,90,40,0.09) 0%, transparent 70%);
-      bottom: -100px; right: -100px;
-      pointer-events: none;
-      animation: drift 22s ease-in-out infinite alternate-reverse;
-    }
-    .glow-3 {
-      position: fixed;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(123,124,200,0.1) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    @keyframes drift {
-      from { transform: translate(0, 0); }
-      to   { transform: translate(40px, 30px); }
-    }
-
-    /* ── Layout helpers ────────────────────────────────────────── */
+    /* ── Layout ────────────────────────────────────────────────── */
     .container {
       max-width: 1100px;
       margin: 0 auto;
       padding: 0 24px;
-      position: relative;
-      z-index: 1;
     }
-    .section { padding: 100px 0; }
+    section { padding: 80px 0; }
 
-    /* ── Logo ──────────────────────────────────────────────────── */
-    .logo-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      flex-shrink: 0;
-      object-fit: cover;
-    }
-    .logo-type {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      background: linear-gradient(135deg, #F0EEF8 30%, var(--purple) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    /* ── Logo SVG ──────────────────────────────────────────────── */
+    .logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon { flex-shrink: 0; }
+    .logo-text {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
     }
 
-    /* ── Nav ───────────────────────────────────────────────────── */
+    /* ── Navbar ────────────────────────────────────────────────── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 18px 0;
-      background: rgba(8,11,20,0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      z-index: 1000;
+      background: var(--bg-dark);
       border-bottom: 1px solid var(--border);
-      transition: all 0.3s;
+      padding: 14px 0;
     }
-    nav .inner {
+    .nav-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .nav-links {
       display: flex;
-      gap: 36px;
+      align-items: center;
+      gap: 32px;
       list-style: none;
     }
     .nav-links a {
       text-decoration: none;
       color: var(--muted);
       font-size: 14px;
-      letter-spacing: 0.05em;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-cta {
-      background: linear-gradient(135deg, var(--orange), #d94818);
-      color: #fff !important;
-      padding: 10px 24px;
-      border-radius: 100px;
-      font-size: 14px !important;
       font-weight: 500;
       letter-spacing: 0.04em;
-      transition: opacity 0.2s, transform 0.2s !important;
+      transition: color 0.2s;
     }
-    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      background: var(--primary) !important;
+      color: #fff !important;
+      padding: 9px 22px !important;
+      border-radius: 100px;
+      transition: opacity 0.2s !important;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px 20px;
+      gap: 16px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: #fff; }
+    .mobile-menu a.nav-cta {
+      text-align: center;
+      padding: 10px 0 !important;
+      border-radius: 100px;
+      border: none;
+      margin-top: 4px;
+      color: #fff !important;
+    }
 
     /* ── Hero ──────────────────────────────────────────────────── */
     .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
+      position: relative;
       padding-top: 80px;
+      padding-bottom: 0;
+      overflow: hidden;
     }
     .hero-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
+      gap: 64px;
       align-items: center;
+      padding: 80px 0 160px;
     }
+
+    /* wave bottom decoration */
+    .hero-wave {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      width: 100%;
+      line-height: 0;
+      pointer-events: none;
+    }
+    .hero-wave svg { width: 100%; display: block; }
+
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--glass);
-      border: 1px solid var(--border);
+      background: rgba(218,70,42,0.12);
+      border: 1px solid rgba(218,70,42,0.3);
       border-radius: 100px;
       padding: 6px 16px;
       font-size: 12px;
-      color: var(--purple);
+      font-weight: 600;
+      color: #f08060;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       margin-bottom: 28px;
     }
-    .hero-badge::before {
-      content: '';
+    .hero-badge-dot {
       width: 6px; height: 6px;
-      background: var(--purple);
+      background: var(--primary);
       border-radius: 50%;
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.8); }
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.4; transform:scale(0.7); }
     }
+
     .hero h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(44px, 5.5vw, 72px);
-      font-weight: 300;
+      font-size: clamp(2.6rem, 5vw, 4.8rem);
+      font-weight: 700;
       line-height: 1.1;
-      margin-bottom: 24px;
+      color: #fff;
+      margin-bottom: 22px;
+      text-transform: none;
       letter-spacing: -0.01em;
     }
-    .hero h1 em {
-      font-style: italic;
-      background: linear-gradient(135deg, var(--orange) 0%, var(--purple) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+    .hero h1 span { color: var(--primary); }
+    .hero h1 em   { font-style: normal; color: var(--accent); }
+
     .hero-sub {
-      font-size: 17px;
+      font-size: 16px;
+      font-weight: 400;
       color: var(--muted);
       max-width: 440px;
-      margin-bottom: 44px;
-      line-height: 1.8;
+      margin-bottom: 40px;
+      line-height: 1.85;
     }
     .hero-actions {
       display: flex;
-      gap: 16px;
+      gap: 14px;
       flex-wrap: wrap;
       align-items: center;
     }
-    .btn-primary {
+
+    /* ── Buttons ───────────────────────────────────────────────── */
+    .btn-main {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      background: linear-gradient(135deg, var(--orange) 0%, #d84415 100%);
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
       color: #fff;
-      padding: 16px 36px;
+      padding: 14px 32px;
       border-radius: 100px;
       text-decoration: none;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: 0.03em;
       transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 8px 32px rgba(240,90,40,0.25);
+      box-shadow: 0 6px 28px rgba(218,70,42,0.3);
     }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(240,90,40,0.35);
-    }
-    .btn-secondary {
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(218,70,42,0.4); }
+
+    .btn-ghost {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       color: var(--muted);
       text-decoration: none;
-      font-size: 15px;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 14px 0;
       transition: color 0.2s;
-      padding: 16px 0;
     }
-    .btn-secondary:hover { color: var(--text); }
-    .btn-secondary i { transition: transform 0.2s; }
-    .btn-secondary:hover i { transform: translateX(4px); }
+    .btn-ghost:hover { color: #fff; }
+    .btn-ghost i { transition: transform 0.2s; }
+    .btn-ghost:hover i { transform: translateX(4px); }
 
-    /* Hero phone mockup */
+    /* ── Phone mockup ──────────────────────────────────────────── */
     .hero-visual {
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
     }
     .phone-frame {
-      width: 280px;
-      background: var(--dark3);
-      border-radius: 36px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow:
-        0 0 0 1px rgba(0,0,0,0.5),
-        0 40px 80px rgba(0,0,0,0.6),
-        0 0 60px rgba(26,143,222,0.08);
+      width: 270px;
+      background: var(--bg-dark);
+      border-radius: 34px;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 50px rgba(98,89,144,0.15);
       overflow: hidden;
-      position: relative;
-      z-index: 2;
       animation: float 5s ease-in-out infinite;
     }
     @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-12px); }
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
     }
     .phone-notch {
-      height: 28px;
-      background: var(--dark);
-      border-bottom-left-radius: 18px;
-      border-bottom-right-radius: 18px;
-      width: 110px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      height: 26px;
+      background: rgba(0,0,0,0.3);
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      width: 100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
     }
     .phone-notch::after {
       content: '';
-      width: 10px; height: 10px;
-      background: #1a1f2e;
+      width: 9px; height: 9px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.06);
     }
-    .phone-content {
-      padding: 20px 16px 30px;
-    }
+    .phone-content { padding: 18px 14px 26px; }
     .chat-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
     .avatar-ring {
-      width: 36px; height: 36px;
+      width: 34px; height: 34px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--orange), var(--purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: #fff; flex-shrink: 0;
     }
-    .chat-name { font-size: 13px; font-weight: 500; }
+    .chat-name { font-size: 12px; font-weight: 600; }
     .chat-status {
-      font-size: 11px;
-      color: #4CAF50;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-size: 10px; color: #4CAF50;
+      display: flex; align-items: center; gap: 3px;
     }
     .chat-status::before {
-      content: '';
-      width: 6px; height: 6px;
-      background: #4CAF50;
-      border-radius: 50%;
+      content: ''; width: 5px; height: 5px;
+      background: #4CAF50; border-radius: 50%;
     }
-    .msg { margin-bottom: 10px; }
+    .msg { margin-bottom: 8px; }
     .msg-in  { display: flex; justify-content: flex-start; }
     .msg-out { display: flex; justify-content: flex-end; }
     .bubble {
-      max-width: 80%;
-      padding: 9px 13px;
-      border-radius: 16px;
-      font-size: 12px;
-      line-height: 1.5;
+      max-width: 82%; padding: 8px 11px;
+      border-radius: 14px; font-size: 11px; line-height: 1.5;
     }
-    .bubble-in {
-      background: rgba(255,255,255,0.07);
-      border-bottom-left-radius: 4px;
-      color: var(--text);
-    }
+    .bubble-in  { background: rgba(255,255,255,0.08); border-bottom-left-radius: 3px; }
     .bubble-out {
-      background: linear-gradient(135deg, var(--blue), #1567b0);
-      border-bottom-right-radius: 4px;
-      color: #fff;
+      background: linear-gradient(135deg, var(--secondary), #4e4880);
+      border-bottom-right-radius: 3px; color: #fff;
     }
-    .bubble-time {
-      font-size: 10px;
-      color: rgba(255,255,255,0.4);
-      text-align: right;
-      margin-top: 3px;
-    }
-    .typing-indicator {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 10px 13px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
+    .bubble-time { font-size: 9px; color: rgba(255,255,255,0.35); text-align: right; margin-top: 2px; }
+    .typing-ind {
+      display: flex; gap: 3px; align-items: center;
+      padding: 9px 11px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px; border-bottom-left-radius: 3px;
       width: fit-content;
     }
-    .typing-dot {
-      width: 6px; height: 6px;
-      background: var(--muted);
-      border-radius: 50%;
-      animation: typing 1.2s ease-in-out infinite;
+    .t-dot {
+      width: 5px; height: 5px;
+      background: var(--muted); border-radius: 50%;
+      animation: typingAnim 1.2s ease-in-out infinite;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typing {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30%           { transform: translateY(-5px); opacity: 1; }
+    .t-dot:nth-child(2) { animation-delay: 0.2s; }
+    .t-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingAnim {
+      0%,60%,100% { transform: translateY(0); opacity:0.4; }
+      30%          { transform: translateY(-4px); opacity:1; }
     }
 
-    /* ── Stat strip ────────────────────────────────────────────── */
+    /* ── Stats ─────────────────────────────────────────────────── */
     .stat-strip {
-      padding: 48px 0;
+      background: var(--bg-dark);
+      padding: 44px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
-    .stat-strip .inner {
-      display: flex;
-      justify-content: center;
-      gap: 80px;
-      flex-wrap: wrap;
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
     }
     .stat-item { text-align: center; }
     .stat-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 48px;
-      font-weight: 300;
-      background: linear-gradient(135deg, var(--orange), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--primary);
       line-height: 1;
+      margin-bottom: 6px;
     }
-    .stat-label {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 6px;
-      letter-spacing: 0.05em;
-    }
+    .stat-label { font-size: 13px; color: var(--muted); font-weight: 500; }
 
     /* ── Section header ────────────────────────────────────────── */
-    .section-label {
+    .section-eyebrow {
       font-size: 11px;
+      font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--orange);
+      color: var(--primary);
+      margin-bottom: 14px;
+    }
+    .section-h {
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: rgb(185, 178, 220);
+      text-transform: uppercase;
       margin-bottom: 16px;
     }
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(36px, 4vw, 56px);
-      font-weight: 300;
-      line-height: 1.15;
-      margin-bottom: 20px;
-    }
-    .section-title em { font-style: italic; color: var(--purple); }
+    .section-h span { color: var(--primary); }
+    .section-h em   { color: var(--accent); font-style: normal; }
     .section-desc {
       color: var(--muted);
-      font-size: 16px;
-      max-width: 520px;
-      line-height: 1.8;
+      font-size: 15px;
+      max-width: 500px;
+      line-height: 1.85;
+      font-weight: 400;
     }
 
     /* ── Features ──────────────────────────────────────────────── */
-    .features-grid {
+    .feat-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 64px;
+      gap: 20px;
+      margin-top: 56px;
     }
     .feat-card {
-      background: var(--glass);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 36px 28px;
-      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .feat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--blue), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
+      border-radius: 16px;
+      padding: 32px 24px;
+      transition: border-color 0.3s, transform 0.3s;
     }
     .feat-card:hover {
-      border-color: rgba(26,143,222,0.3);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-color: rgba(98,89,144,0.5);
+      transform: translateY(-3px);
     }
-    .feat-card:hover::before { opacity: 1; }
     .feat-icon {
-      width: 52px; height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      margin-bottom: 22px;
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 18px;
     }
-    .feat-icon-blue   { background: rgba(26,143,222,0.15); color: var(--blue); }
-    .feat-icon-orange { background: rgba(240,90,40,0.15);  color: var(--orange); }
-    .feat-icon-purple { background: rgba(123,124,200,0.15);color: var(--purple); }
-    .feat-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      font-weight: 400;
-      margin-bottom: 12px;
-      letter-spacing: 0.01em;
-    }
-    .feat-desc {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.75;
-    }
+    .fi-red    { background: rgba(218,70,42,0.15); color: var(--primary); }
+    .fi-purple { background: rgba(98,89,144,0.2);  color: var(--accent); }
+    .fi-light  { background: rgba(206,205,247,0.1);color: var(--accent); }
+    .feat-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .feat-desc  { font-size: 13px; color: var(--muted); line-height: 1.75; font-weight: 400; }
 
     /* ── How it works ──────────────────────────────────────────── */
+    .how-bg { background: var(--bg-dark); }
     .how-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
+      gap: 72px;
+      align-items: start;
     }
-    .steps { margin-top: 48px; }
+    .steps { margin-top: 40px; }
     .step {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 36px;
+      display: flex; gap: 18px;
+      margin-bottom: 32px;
       position: relative;
     }
     .step:not(:last-child)::after {
       content: '';
       position: absolute;
-      left: 19px; top: 44px; bottom: -12px;
+      left: 17px; top: 42px; bottom: -8px;
       width: 1px;
       background: linear-gradient(to bottom, var(--border), transparent);
     }
     .step-num {
-      width: 40px; height: 40px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      color: var(--muted);
-      flex-shrink: 0;
-      background: var(--dark2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      color: var(--muted); flex-shrink: 0;
+      background: var(--bg);
       transition: all 0.3s;
     }
     .step:hover .step-num {
-      background: linear-gradient(135deg, var(--orange), var(--purple));
-      color: #fff;
-      border-color: transparent;
+      background: var(--primary);
+      color: #fff; border-color: var(--primary);
     }
-    .step-body h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px;
-      font-weight: 400;
-      margin-bottom: 6px;
-    }
-    .step-body p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
+    .step-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+    .step-body p  { font-size: 13px; color: var(--muted); line-height: 1.7; }
 
-    /* ADN preview */
+    /* ADN card */
     .adn-card {
-      background: var(--dark3);
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: hidden;
     }
     .adn-header {
-      padding: 16px 20px;
+      padding: 14px 18px;
       background: rgba(255,255,255,0.03);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .adn-title {
-      font-size: 13px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .adn-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--purple);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    .adn-body { padding: 24px 20px; }
-    .adn-field { margin-bottom: 16px; }
+    .adn-title { font-size: 12px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .adn-dot   { width: 7px; height: 7px; border-radius: 50%; background: var(--secondary); animation: pulse 2s infinite; }
+    .adn-body  { padding: 20px 18px; }
+    .adn-field { margin-bottom: 14px; }
     .adn-field:last-child { margin-bottom: 0; }
-    .adn-key {
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--orange);
-      margin-bottom: 4px;
-    }
+    .adn-key { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--primary); margin-bottom: 4px; font-weight: 600; }
     .adn-val {
-      font-size: 13px;
-      color: var(--text);
+      font-size: 12px; color: var(--text);
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      line-height: 1.6;
+      border-radius: 8px; padding: 9px 12px; line-height: 1.6;
     }
-
-    /* ── Testimonials ──────────────────────────────────────────── */
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 64px;
-    }
-    .testi-card {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 28px;
-    }
-    .stars { color: var(--orange); font-size: 14px; margin-bottom: 16px; letter-spacing: 3px; }
-    .testi-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      font-style: italic;
-      font-weight: 300;
-      line-height: 1.7;
-      margin-bottom: 24px;
-      color: #d8d4f0;
-    }
-    .testi-author { display: flex; align-items: center; gap: 12px; }
-    .testi-avatar {
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #fff;
-    }
-    .testi-name { font-size: 14px; font-weight: 500; }
-    .testi-role { font-size: 12px; color: var(--muted); }
 
     /* ── Privacy ───────────────────────────────────────────────── */
-    .privacy-banner {
-      background: var(--dark3);
+    .privacy-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 56px 64px;
-      display: flex;
-      gap: 48px;
-      align-items: center;
-    }
-    .privacy-icon {
-      width: 72px; height: 72px;
       border-radius: 20px;
-      background: rgba(123,124,200,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: var(--purple);
-      flex-shrink: 0;
+      padding: 52px 56px;
+      display: flex; gap: 40px; align-items: center;
     }
-    .privacy-body h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px;
-      font-weight: 300;
-      margin-bottom: 12px;
+    .priv-icon {
+      width: 68px; height: 68px; flex-shrink: 0;
+      border-radius: 18px;
+      background: rgba(98,89,144,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: var(--accent);
     }
-    .privacy-body p {
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.8;
-      max-width: 540px;
+    .priv-body h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: rgb(185,178,220);
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
-    .privacy-pills {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
+    .priv-body h2 span { color: var(--primary); }
+    .priv-body p { font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 520px; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
     .pill {
-      background: var(--glass);
+      background: rgba(255,255,255,0.05);
       border: 1px solid var(--border);
       border-radius: 100px;
-      padding: 6px 14px;
-      font-size: 12px;
+      padding: 5px 12px;
+      font-size: 12px; font-weight: 500;
       color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 5px;
     }
-    .pill i { color: var(--purple); font-size: 10px; }
+    .pill i { color: var(--secondary); font-size: 10px; }
 
     /* ── CTA ───────────────────────────────────────────────────── */
     .cta-section {
       text-align: center;
-      padding: 120px 0;
+      position: relative;
     }
     .cta-glow {
       position: absolute;
-      width: 700px; height: 400px;
-      background: radial-gradient(ellipse, rgba(240,90,40,0.07) 0%, transparent 70%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(218,70,42,0.08) 0%, transparent 70%);
       left: 50%; top: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
     .cta-section h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(42px, 5vw, 68px);
-      font-weight: 300;
-      margin-bottom: 20px;
-      line-height: 1.1;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 700;
+      color: rgb(185,178,220);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      line-height: 1.15;
     }
-    .cta-section h2 em {
-      font-style: italic;
-      background: linear-gradient(135deg, var(--orange), var(--purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .cta-section p {
-      color: var(--muted);
-      font-size: 17px;
-      margin-bottom: 48px;
-      line-height: 1.8;
-    }
-    .cta-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    /* ── Footer ────────────────────────────────────────────────── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 48px 0 40px;
-    }
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 24px;
-    }
-    .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .footer-note { font-size: 13px; color: var(--muted); }
-    .footer-legal {
-      font-size: 12px;
-      color: rgba(240,238,248,0.3);
-      text-align: center;
-      margin-top: 32px;
-      line-height: 1.6;
-    }
+    .cta-section h2 span { color: var(--primary); }
+    .cta-section p { color: var(--muted); font-size: 16px; margin-bottom: 44px; line-height: 1.8; }
+    .cta-btns { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 
     /* ── Divider ───────────────────────────────────────────────── */
-    .divider {
+    .hr {
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
     }
 
+    /* ── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: var(--bg-dark);
+      border-top: 1px solid var(--border);
+      padding: 44px 0 36px;
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 20px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .footer-tagline { font-size: 14px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a {
+      font-size: 13px; color: var(--muted);
+      text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #fff; }
+    .footer-legal {
+      font-size: 12px; color: rgba(255,255,255,0.25);
+      line-height: 1.7; text-align: center;
+    }
+    .footer-legal a { color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
+    .footer-legal a:hover { color: rgba(255,255,255,0.6); }
+
     /* ── Responsive ────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .hero-inner         { grid-template-columns: 1fr; gap: 60px; }
-      .hero-visual        { display: none; }
-      .features-grid      { grid-template-columns: 1fr; }
-      .how-inner          { grid-template-columns: 1fr; gap: 48px; }
-      .testimonials-grid  { grid-template-columns: 1fr; }
-      .privacy-banner     { flex-direction: column; padding: 40px 28px; }
-      .stat-strip .inner  { gap: 40px; }
-      .nav-links          { display: none; }
-      .section            { padding: 72px 0; }
+    @media (max-width: 960px) {
+      .hero-inner   { grid-template-columns: 1fr; gap: 48px; padding-bottom: 200px; }
+      .hero-visual  { order: -1; }
+      .phone-frame  { width: 240px; }
+      .how-inner    { grid-template-columns: 1fr; gap: 48px; }
+      .privacy-card { padding: 36px 28px; }
+      .nav-links    { display: none; }
+      .hamburger    { display: flex; }
+      .stat-grid    { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    }
+
+    @media (max-width: 720px) {
+      section       { padding: 60px 0; }
+      .feat-grid    { grid-template-columns: 1fr 1fr; }
+      .hero-inner   { padding-bottom: 180px; }
+      .privacy-card { flex-direction: column; gap: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .feat-grid    { grid-template-columns: 1fr; }
+      .hero h1      { font-size: 2.2rem; }
+      .stat-grid    { grid-template-columns: repeat(2, 1fr); }
+      .hero-inner   { padding-bottom: 160px; }
+      .hero-visual  { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Ambient glows -->
-  <div class="glow-1"></div>
-  <div class="glow-2"></div>
-  <div class="glow-3"></div>
-
-  <!-- Nav -->
-  <nav>
+  <!-- ── Navbar ──────────────────────────────────────────────── -->
+  <nav id="navbar">
     <div class="container">
-      <div class="inner">
-        <a href="#" class="nav-logo">
-          <img src="/logo.webp" alt="Luzzy" class="logo-img" />
-          <span class="logo-type">Luzzy</span>
+      <div class="nav-inner">
+        <a href="#" class="logo-wrap">
+          <svg class="logo-icon" width="32" height="25" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+            <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L146.551 93.886L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217L22.527 15.79Z"/>
+          </svg>
+          <span class="logo-text">Luzzy</span>
         </a>
         <ul class="nav-links">
           <li><a href="#funciones">Funciones</a></li>
@@ -779,30 +631,43 @@
           <li><a href="#privacidad">Privacidad</a></li>
           <li><a href="#descargar" class="nav-cta">Descargar</a></li>
         </ul>
+        <button class="hamburger" id="menuBtn" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#funciones">Funciones</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#privacidad">Privacidad</a>
+      <a href="#descargar" class="nav-cta">Descargar</a>
     </div>
   </nav>
 
-  <!-- Hero -->
+  <!-- ── Hero ────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="container">
       <div class="hero-inner">
+
         <div class="hero-text">
-          <div class="hero-badge">IA para profesionales independientes</div>
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            App SMS con agente de IA
+          </div>
           <h1>
-            Tu asistente que<br/>
-            trabaja mientras<br/>
-            <em>tú trabajas.</em>
+            SMS desde tu móvil,<br/>
+            <span>respondido por IA</span><br/>
+            <em>24 horas al día.</em>
           </h1>
           <p class="hero-sub">
-            Luzzy responde a tus clientes como tú misma, agenda citas, resuelve dudas y cierra servicios — las 24 horas, sin que pierdas ni un cliente.
+            Luzzy es tu app SMS predeterminada con inteligencia artificial integrada. Configura tu perfil una vez y la IA responde como tú, agenda citas y cierra servicios sin que estés pendiente del móvil.
           </p>
           <div class="hero-actions">
-            <a href="#descargar" class="btn-primary">
-              <i class="fa-solid fa-download"></i>
+            <a href="#descargar" class="btn-main">
+              <i class="fa-brands fa-android"></i>
               Descargar gratis
             </a>
-            <a href="#como-funciona" class="btn-secondary">
+            <a href="#como-funciona" class="btn-ghost">
               Ver cómo funciona
               <i class="fa-solid fa-arrow-right"></i>
             </a>
@@ -815,24 +680,21 @@
             <div class="phone-notch"></div>
             <div class="phone-content">
               <div class="chat-header">
-                <div class="avatar-ring">
-                  <i class="fa-solid fa-comment-dots"></i>
-                </div>
+                <div class="avatar-ring"><i class="fa-solid fa-comment-dots"></i></div>
                 <div>
                   <div class="chat-name">+34 611 234 567</div>
                   <div class="chat-status">Luzzy respondiendo</div>
                 </div>
               </div>
-
               <div class="msg msg-in">
                 <div class="bubble bubble-in">
-                  Hola! cuánto cobras por una sesión de masajes?
+                  Hola! cuánto cobras por una sesión?
                   <div class="bubble-time">11:42</div>
                 </div>
               </div>
               <div class="msg msg-out">
                 <div class="bubble bubble-out">
-                  Hola! 😊 El masaje relajante de 60 min son 60€. Si lo quieres en tu hotel o a domicilio también puedo, sin coste extra.
+                  Hola! 😊 El masaje relajante 60min son 60€. También voy a domicilio o hotel, sin coste extra.
                   <div class="bubble-time">11:42</div>
                 </div>
               </div>
@@ -844,35 +706,46 @@
               </div>
               <div class="msg msg-out">
                 <div class="bubble bubble-out">
-                  Genial! Tengo hueco el martes a las 11 o a las 17h ¿Cuál te viene mejor? 📅
+                  Tengo el martes a las 11 o a las 17h ¿cuál te viene mejor? 📅
                   <div class="bubble-time">11:43</div>
                 </div>
               </div>
-              <div class="msg msg-in">
-                <div class="bubble bubble-in">
-                  A las 11, en el Marriott del centro
-                  <div class="bubble-time">11:44</div>
-                </div>
-              </div>
-              <div style="display:flex; gap:4px; padding: 4px 0;">
-                <div class="typing-indicator">
-                  <div class="typing-dot"></div>
-                  <div class="typing-dot"></div>
-                  <div class="typing-dot"></div>
+              <div style="padding:4px 0">
+                <div class="typing-ind">
+                  <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
+    </div>
+
+    <!-- Wave decoration bottom -->
+    <div class="hero-wave">
+      <svg viewBox="0 0 1566 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#a92a00"/>
+            <stop offset="1" stop-color="#da462a"/>
+          </linearGradient>
+        </defs>
+        <!-- Angular red shape -->
+        <path d="M0 30 L0 120 L1566 120 L1566 80 L810 80 L182 80 L375 30 Z"
+              fill="url(#waveGrad)" fill-opacity="0.85"/>
+        <!-- Diagonal lavender line -->
+        <path d="M0 5 L320 5 L126 75 L1566 75"
+              fill="none" stroke="#cecdf7" stroke-width="1.5" stroke-opacity="0.5"
+              stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
     </div>
   </section>
 
-  <!-- Stats -->
-  <div class="divider"></div>
+  <!-- ── Stats ────────────────────────────────────────────────── -->
   <div class="stat-strip">
     <div class="container">
-      <div class="inner">
+      <div class="stat-grid">
         <div class="stat-item">
           <div class="stat-num">24/7</div>
           <div class="stat-label">Disponible siempre</div>
@@ -887,70 +760,71 @@
         </div>
         <div class="stat-item">
           <div class="stat-num">100%</div>
-          <div class="stat-label">Tu voz y tu estilo</div>
+          <div class="stat-label">Tu voz, tu estilo</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="divider"></div>
 
-  <!-- Features -->
-  <section class="section" id="funciones">
+  <!-- ── Features ─────────────────────────────────────────────── -->
+  <section id="funciones">
     <div class="container">
-      <div class="section-label">Funciones</div>
-      <h2 class="section-title">Todo lo que necesitas,<br/><em>sin complicaciones</em></h2>
+      <div class="section-eyebrow">Funciones</div>
+      <h2 class="section-h">TODO LO QUE NECESITAS,<br/><span>SIN COMPLICACIONES</span></h2>
       <p class="section-desc">Configuras tu perfil una vez y Luzzy hace el resto. Habla como tú, conoce tus servicios y nunca compromete tu privacidad.</p>
 
-      <div class="features-grid">
+      <div class="feat-grid">
         <div class="feat-card">
-          <div class="feat-icon feat-icon-blue"><i class="fa-solid fa-robot"></i></div>
+          <div class="feat-icon fi-red"><i class="fa-solid fa-robot"></i></div>
           <div class="feat-title">Responde como tú</div>
-          <p class="feat-desc">La IA aprende tu tono, tu vocabulario y hasta tus emojis. Los clientes nunca notarán la diferencia — solo verán que siempre estás disponible.</p>
+          <p class="feat-desc">La IA aprende tu tono, vocabulario y emojis. Tus clientes siempre ven que estás disponible.</p>
         </div>
         <div class="feat-card">
-          <div class="feat-icon feat-icon-orange"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="feat-icon fi-purple"><i class="fa-solid fa-calendar-check"></i></div>
           <div class="feat-title">Agenda automática</div>
-          <p class="feat-desc">Negocia fechas, horas y lugares con el cliente. Cuando la cita está confirmada, te avisa al instante con todos los detalles.</p>
+          <p class="feat-desc">Negocia fechas y lugares con el cliente. Cuando está confirmado, te avisa al instante.</p>
         </div>
         <div class="feat-card">
-          <div class="feat-icon feat-icon-purple"><i class="fa-solid fa-coins"></i></div>
+          <div class="feat-icon fi-light"><i class="fa-solid fa-coins"></i></div>
           <div class="feat-title">Cierra servicios</div>
-          <p class="feat-desc">Informa de precios, responde objeciones y convence al cliente. Sin presión, sin perder tiempo. Cuando el trato está cerrado, apareces tú.</p>
+          <p class="feat-desc">Informa de precios y convence al cliente. Cuando el trato está cerrado, apareces tú.</p>
         </div>
         <div class="feat-card">
-          <div class="feat-icon feat-icon-orange"><i class="fa-solid fa-bell"></i></div>
+          <div class="feat-icon fi-red"><i class="fa-solid fa-bell"></i></div>
           <div class="feat-title">Alertas en tiempo real</div>
-          <p class="feat-desc">Cada vez que se confirma una cita o surge algo que requiere tu atención, recibes una notificación inmediata en tu móvil.</p>
+          <p class="feat-desc">Notificaciones push inmediatas cuando se confirma una cita o algo requiere tu atención.</p>
         </div>
         <div class="feat-card">
-          <div class="feat-icon feat-icon-purple"><i class="fa-solid fa-list-check"></i></div>
+          <div class="feat-icon fi-purple"><i class="fa-solid fa-list-check"></i></div>
           <div class="feat-title">Gestión de citas</div>
-          <p class="feat-desc">Consulta, confirma o cancela tus citas desde la app. Todo organizado, con el nombre del cliente, servicio, hora y lugar.</p>
+          <p class="feat-desc">Consulta, confirma o cancela citas desde la app. Todo organizado con nombre, hora y lugar.</p>
         </div>
         <div class="feat-card">
-          <div class="feat-icon feat-icon-blue"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="feat-icon fi-light"><i class="fa-solid fa-shield-halved"></i></div>
           <div class="feat-title">Funciona por SMS</div>
-          <p class="feat-desc">Sin necesidad de WhatsApp ni redes sociales. Funciona directamente con SMS — el canal más discreto y universal que existe.</p>
+          <p class="feat-desc">Sin WhatsApp ni redes sociales. SMS nativo — el canal más discreto y universal que existe.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- How it works -->
-  <section class="section" id="como-funciona" style="background: var(--dark2);">
+  <div class="hr"></div>
+
+  <!-- ── How it works ──────────────────────────────────────────── -->
+  <section id="como-funciona" class="how-bg">
     <div class="container">
       <div class="how-inner">
         <div>
-          <div class="section-label">Cómo funciona</div>
-          <h2 class="section-title">Tu ADN.<br/><em>La voz de Luzzy.</em></h2>
-          <p class="section-desc">Configuras una sola vez cómo eres, qué ofreces y cómo hablas. Luzzy absorbe esa información y la usa para responder exactamente como lo harías tú.</p>
+          <div class="section-eyebrow">Cómo funciona</div>
+          <h2 class="section-h">TU ADN.<br/><em>LA VOZ DE LUZZY.</em></h2>
+          <p class="section-desc">Configuras una sola vez cómo eres, qué ofreces y cómo hablas. Luzzy usa esa información para responder exactamente como lo harías tú.</p>
 
           <div class="steps">
             <div class="step">
               <div class="step-num">1</div>
               <div class="step-body">
                 <h3>Configura tu ADN</h3>
-                <p>Describe tu personalidad, estilo de comunicación, servicios, precios y horarios desde la app.</p>
+                <p>Describe tu personalidad, estilo, servicios, precios y horarios desde la app.</p>
               </div>
             </div>
             <div class="step">
@@ -970,7 +844,7 @@
           </div>
         </div>
 
-        <!-- ADN preview card -->
+        <!-- ADN preview -->
         <div class="adn-card">
           <div class="adn-header">
             <span class="adn-title">
@@ -999,7 +873,7 @@
             <div class="adn-field">
               <div class="adn-key">Respuesta automática</div>
               <div class="adn-val" style="display:flex;align-items:center;gap:10px;">
-                <span style="color:#4CAF50"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activada</span>
+                <span style="color:#4CAF50"><i class="fa-solid fa-circle" style="font-size:8px"></i> Activada</span>
                 <span style="font-size:11px;color:var(--muted)">Respondiendo en tu nombre</span>
               </div>
             </div>
@@ -1009,118 +883,87 @@
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="section" id="testimonios">
-    <div class="container">
-      <div class="section-label">Testimonios</div>
-      <h2 class="section-title">Lo que dicen<br/><em>nuestras usuarias</em></h2>
+  <div class="hr"></div>
 
-      <div class="testimonials-grid">
-        <div class="testi-card">
-          <div class="stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <p class="testi-text">"Antes perdía clientes porque no podía responder en el momento. Ahora Luzzy los atiende y me avisa cuando hay cita confirmada. Mis ingresos aumentaron un 40%."</p>
-          <div class="testi-author">
-            <div class="testi-avatar" style="background: linear-gradient(135deg, var(--orange), #d84415);">
-              <i class="fa-solid fa-spa"></i>
-            </div>
-            <div>
-              <div class="testi-name">Valentina M.</div>
-              <div class="testi-role">Madrid · Masajista terapéutica</div>
-            </div>
-          </div>
-        </div>
-        <div class="testi-card">
-          <div class="stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <p class="testi-text">"Lo que más me sorprende es que los clientes no notan que es una IA. Habla exactamente como yo. Y cuando quiero retomar la conversación, solo apago el switch."</p>
-          <div class="testi-author">
-            <div class="testi-avatar" style="background: linear-gradient(135deg, var(--purple), #5A5BAE);">
-              <i class="fa-solid fa-heart"></i>
-            </div>
-            <div>
-              <div class="testi-name">Camila R.</div>
-              <div class="testi-role">Barcelona · Acompañante</div>
-            </div>
-          </div>
-        </div>
-        <div class="testi-card">
-          <div class="stars">
-            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-          </div>
-          <p class="testi-text">"La privacidad era mi mayor preocupación. Luzzy funciona por SMS, sin aplicaciones de terceros, y mis datos no van a ningún lado. Llevo 3 meses y no lo cambio por nada."</p>
-          <div class="testi-author">
-            <div class="testi-avatar" style="background: linear-gradient(135deg, var(--blue), #1567b0);">
-              <i class="fa-solid fa-moon"></i>
-            </div>
-            <div>
-              <div class="testi-name">Sofía A.</div>
-              <div class="testi-role">Valencia · Terapeuta</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Privacy -->
-  <section class="section" id="privacidad" style="background: var(--dark2);">
+  <!-- ── Privacy ───────────────────────────────────────────────── -->
+  <section id="privacidad">
     <div class="container">
-      <div class="privacy-banner">
-        <div class="privacy-icon">
+      <div class="privacy-card">
+        <div class="priv-icon">
           <i class="fa-solid fa-shield-halved"></i>
         </div>
-        <div class="privacy-body">
-          <h2>Tu privacidad,<br/><em>ante todo.</em></h2>
-          <p>Luzzy no almacena conversaciones completas, no comparte datos con terceros y nunca menciona a tus clientes en ninguna plataforma. Tu vida profesional es solo tuya.</p>
-          <div class="privacy-pills">
+        <div class="priv-body">
+          <h2>TU PRIVACIDAD,<br/><span>ANTE TODO.</span></h2>
+          <p>Luzzy funciona como tu app SMS nativa. No almacena conversaciones completas, no comparte datos con terceros y nunca expone tu actividad en ninguna plataforma.</p>
+          <div class="pills">
             <span class="pill"><i class="fa-solid fa-circle-xmark"></i>Sin WhatsApp ni redes sociales</span>
             <span class="pill"><i class="fa-solid fa-message"></i>SMS nativo, sin intermediarios</span>
-            <span class="pill"><i class="fa-solid fa-credit-card"></i>Sin pagos online ni datos bancarios</span>
-            <span class="pill"><i class="fa-solid fa-lock"></i>Cifrado end-to-end</span>
+            <span class="pill"><i class="fa-solid fa-lock"></i>JWT cifrado</span>
+            <span class="pill"><i class="fa-solid fa-user-shield"></i>Datos solo tuyos</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-section section" id="descargar">
-    <div class="container" style="position:relative;">
+  <!-- ── CTA ───────────────────────────────────────────────────── -->
+  <section id="descargar" class="cta-section how-bg">
+    <div class="container" style="position:relative">
       <div class="cta-glow"></div>
-      <div class="section-label" style="margin-bottom:20px;">Empieza hoy</div>
-      <h2>¿Lista para trabajar<br/><em>sin límites?</em></h2>
+      <div class="section-eyebrow" style="margin-bottom:18px">Empieza hoy</div>
+      <h2>¿LISTO PARA TRABAJAR<br/><span>SIN LÍMITES?</span></h2>
       <p>Descarga Luzzy gratis y configura tu primer ADN en menos de 5 minutos.<br/>Sin compromisos. Sin tarjeta de crédito.</p>
-      <div class="cta-buttons">
-        <a href="#" class="btn-primary" style="font-size:16px; padding: 18px 44px;">
-          <i class="fa-brands fa-android" style="font-size:20px;"></i>
+      <div class="cta-btns">
+        <a href="#" class="btn-main" style="font-size:16px;padding:16px 40px">
+          <i class="fa-brands fa-android" style="font-size:20px"></i>
           Descargar para Android
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ── Footer ────────────────────────────────────────────────── -->
   <footer>
     <div class="container">
-      <div class="footer-inner">
-        <a href="#" class="footer-brand">
-          <img src="/logo.webp" alt="Luzzy" class="logo-img" style="width:30px;height:30px;" />
-          <span class="logo-type" style="font-size:22px;">Luzzy</span>
+      <div class="footer-top">
+        <a href="#" class="logo-wrap">
+          <svg width="26" height="20" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+            <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L146.551 93.886L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217L22.527 15.79Z"/>
+          </svg>
+          <span class="logo-text" style="font-size:20px">Luzzy</span>
         </a>
-        <span class="footer-note">Tu asistente de IA. Siempre disponible.</span>
+        <span class="footer-tagline">Tu asistente SMS con IA. Siempre disponible.</span>
+        <div class="footer-links">
+          <a href="/privacy">Privacidad</a>
+          <a href="/delete-account">Eliminar cuenta</a>
+        </div>
       </div>
       <p class="footer-legal">
         © 2026 Luzzy · Todos los derechos reservados ·
-        <a href="/privacy" style="color:rgba(240,238,248,0.4);text-decoration:none;" onmouseover="this.style.color='#F0EEF8'" onmouseout="this.style.color='rgba(240,238,248,0.4)'">Política de Privacidad</a>
-        &nbsp;·&nbsp;
-        <a href="/delete-account" style="color:rgba(240,238,248,0.4);text-decoration:none;" onmouseover="this.style.color='#F0EEF8'" onmouseout="this.style.color='rgba(240,238,248,0.4)'">Eliminar cuenta</a>
-        <br/>La app es una herramienta de comunicación profesional. El uso y la naturaleza de los servicios es responsabilidad exclusiva del usuario.
+        <a href="/privacy">Política de Privacidad</a> ·
+        <a href="/delete-account">Eliminar cuenta</a><br/>
+        La app es una herramienta de comunicación profesional. El uso y la naturaleza de los servicios es responsabilidad exclusiva del usuario.
       </p>
     </div>
   </footer>
+
+  <script>
+    // Hamburger menu
+    const btn = document.getElementById('menuBtn');
+    const menu = document.getElementById('mobileMenu');
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+    // Close on link click
+    menu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        btn.classList.remove('open');
+        menu.classList.remove('open');
+      });
+    });
+  </script>
 
 </body>
 </html>
