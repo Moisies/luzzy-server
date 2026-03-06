@@ -1,90 +1,360 @@
 <!DOCTYPE html>
-<html lang="es" style="overflow-x:hidden">
+<html lang="en" style="overflow-x:hidden">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Luzzy — SMS con IA para Android</title>
-  <meta name="description" content="Luzzy es tu app SMS predeterminada con agente de IA integrado. Responde a tus clientes, agenda citas y sincroniza mensajes en todos tus dispositivos."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
-
+  <title>Luzzy — AI-powered SMS App</title>
+  <meta name="description" content="Luzzy uses artificial intelligence to reply to your SMS messages automatically. It can schedule bookings, answer client questions and manage your time."/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
   <style>
-    /* ── Reset ─────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* ── Variables (de app.scss de eazzy) ───────────────── */
+    /* ── Variables ───────────────────────────────────────── */
     :root {
-      --bg:      rgb(48, 44, 68);
-      --primary: #da462a;
-      --text:    hsla(0, 0%, 100%, 0.82);
+      --bg: rgb(48, 44, 68);
+      --primary: rgb(210, 81, 64);
+      --grad-start: rgb(169, 42, 0);
+      --grad-end:   rgb(218, 70, 42);
+      --secondary:  rgb(79, 68, 126);
+      --h1-color:   rgb(96, 90, 140);
+      --features-bg: rgb(96, 90, 140);
+      --user-bubble: rgb(132, 115, 171);
     }
 
-    /* ── Base (app.scss) ────────────────────────────────── */
+    /* ── Reset & Base ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
     html, body {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      width: 100%;
-      font-smooth: antialiased;
+      margin: 0; padding: 0;
+      height: 100%; width: 100%;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
     body {
-      background: var(--bg);
-      font-family: 'Quicksand', sans-serif;
-      color: var(--text);
-      line-height: 1.6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #212529;
+      line-height: 1.5;
     }
 
-    /* ── Grid (Bootstrap md cols) ───────────────────────── */
-    .container {
-      width: 100%;
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      margin: 0 -15px;
-    }
-    .col, .col-md-6, .col-xs-12, .col-sm-6, .col-md-4, .col-sm-12 {
-      padding: 0 15px;
-      width: 100%;
-    }
-    @media (min-width: 768px) {
-      .col-md-6 { width: 50%; }
-      .col-md-4 { width: 33.333%; }
-      .col-sm-6 { width: 50%; }
-    }
-    @media (min-width: 992px) {
-      .d-flex-lg { display: flex !important; }
-    }
-    .d-flex          { display: flex; }
-    .align-items-center { align-items: center; }
-    .pt-4            { padding-top: 24px; }
-    .w-100           { width: 100%; }
-    .flex-grow-1     { flex-grow: 1; }
-
-    /* ── h1 global (app.scss) ───────────────────────────── */
+    /* ── Typography ──────────────────────────────────────── */
     h1 {
       text-transform: uppercase;
       font-size: 3.6rem;
-      color: rgb(96, 90, 140);
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 700;
+      font-weight: 400;
+      color: var(--h1-color);
+      margin: 0 0 30px 0;
+      text-align: center;
     }
     h1 span, h1 b { color: var(--primary); }
-
-    h3 { color: rgb(96, 90, 140); font-family: 'Quicksand', sans-serif; }
-
+    h3 { color: var(--h1-color); }
     section { padding: 60px 0; }
     section h1 { padding-bottom: 60px; }
 
-    ul { list-style: none; }
-    ul li::before {
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn-main {
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      border: none;
+      color: white !important;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity .2s;
+      border-radius: 0;
+    }
+    .btn-main:hover { opacity: .85; }
+    .btn-main-lg { font-size: 1.2rem; padding: 16px 36px; }
+
+    /* ── HERO / bottom-background ────────────────────────── */
+    .bottom-background-container {
+      position: relative;
+      padding-bottom: 70px;
+      overflow: hidden;
+    }
+    .bottom-background {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: var(--bg);
+      z-index: -1;
+      box-shadow: 0 5px 10px 3px rgba(0,0,0,.3);
+    }
+    /* wave at bottom of hero */
+    .hero-wave {
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 100%;
+      line-height: 0;
+      z-index: 1;
+    }
+    .hero-wave svg { display: block; width: 100%; }
+
+    /* ── Logo ────────────────────────────────────────────── */
+    .logo-wrap { width: 90px; }
+    .logo-icon { height: 40px; margin-bottom: 8px; }
+    .logo-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    /* ── Hero content ────────────────────────────────────── */
+    .slogan-form { position: relative; z-index: 2; padding: 60px 0 40px; }
+    .hero-h1 {
+      color: white !important;
+      text-transform: none !important;
+      font-size: 5rem;
+      text-align: left !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    .hero-h1 span { color: var(--primary); }
+    @media (max-width: 991px) { .hero-h1 { font-size: 4rem; } }
+    @media (max-width: 767px) { .hero-h1 { font-size: 3.5rem; } }
+    @media (max-width: 500px) { .hero-h1 { font-size: 2.8rem; } }
+    @media (max-width: 400px) { .hero-h1 { font-size: 2.2rem; } }
+
+    /* ── MockChat ────────────────────────────────────────── */
+    .mock-chat {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      min-height: 420px;
+    }
+    .phone-image {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .phone-image img {
+      width: min(290px, 100%);
+      height: auto;
+      border-radius: 46px;
+      box-shadow: 10px 10px 30px 10px rgba(0,0,0,.4);
+    }
+    .chat-bubbles {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      width: min(380px, 100%);
+      position: absolute;
+      top: 0; bottom: 0;
+      padding-bottom: 70px;
+      overflow: hidden;
+    }
+    .user-bubble, .bot-bubble {
+      margin-top: 16px;
+      width: min(280px, 100%);
+      position: relative;
+      padding: 10px 12px 22px 12px;
+      font-size: .92rem;
+      animation: slideUp .4s ease-out both;
+    }
+    .user-bubble {
+      border-radius: 8px 8px 0 8px;
+      background: var(--user-bubble);
+      color: white;
+      align-self: flex-start;
+      box-shadow: -5px 5px 10px rgba(0,0,0,.32);
+    }
+    .bot-bubble {
+      border-radius: 8px 8px 8px 0;
+      background: #f0f0f0;
+      color: #27272c;
+      align-self: flex-end;
+      box-shadow: 5px 5px 10px rgba(0,0,0,.32);
+    }
+    .bubble-time {
+      position: absolute;
+      font-size: 10px;
+      right: 8px; bottom: 4px;
+      opacity: .55;
+    }
+    .bubble-icon-user, .bubble-icon-bot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .bubble-icon-user { background: rgba(255,255,255,.25); }
+    .bubble-icon-bot  { background: rgba(0,0,0,.08); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── FAQ Bubbles ─────────────────────────────────────── */
+    .faq-section { padding: 80px 0; }
+    .bubbles-container { display: flex; flex-direction: column; }
+    .bubble-container { display: flex; flex-direction: column; margin: 15px 0; }
+    .faq-bubble {
+      margin-left: 20px;
+      font-weight: 300;
+      width: 90%;
+      padding: 20px;
+    }
+    .faq-bubble.right {
+      border-radius: 10px 10px 0 10px;
+      color: white;
+      align-self: flex-end;
+      background-color: var(--user-bubble);
+      margin-left: 0;
+    }
+    .faq-bubble.right::before { content: "A: "; font-weight: 700; }
+    .faq-bubble.left {
+      background-color: #f0f0f0;
+      color: #27272c;
+      border-radius: 10px 10px 10px 0;
+      align-self: flex-start;
+    }
+    .faq-bubble.left::before { content: "Q: "; font-weight: 700; }
+
+    /* ── Why section ─────────────────────────────────────── */
+    .why-section { padding: 0 0 60px 0; }
+    .why {
+      text-align: center;
+      position: relative;
+      padding: 2vw;
+      height: 100%;
+      transform: skew(-2deg, -2deg);
+      border: 0.1px solid rgba(112, 56, 255, .1);
+      background: white;
+      transition: all .2s ease-in-out;
+      color: #1a1a1a;
+    }
+    .why:hover, .why:active {
+      transform: scale(1.03);
+      box-shadow: rgba(0, 27, 103, .1) 0px 15px 43.65px 1.35px;
+    }
+    .why h2 {
+      transform: skew(2deg, 2deg);
+      color: var(--h1-color);
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin: 12px 0 8px;
+    }
+    .why .description {
+      padding: 10px;
+      transform: skew(2deg, 2deg);
+      font-weight: 300;
+      font-size: .92rem;
+      text-align: left;
+    }
+    .icon-bg {
+      transform: skew(2deg, 2deg);
+      color: white;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 105px;
+      height: 105px;
+      position: relative;
+    }
+    .bg-nail { position: absolute; }
+    .icon-svg {
+      position: relative;
+      z-index: 1;
+      pointer-events: none;
+    }
+    /* nail rotations matching eazzy */
+    .icon-bg.time .bg-gray { transform: rotate(50deg); }
+    .icon-bg.booking .bg-gray { transform: rotate(-70deg); }
+    .icon-bg.booking .bg-color { transform: rotate(100deg) translate(4px, 3px); }
+    .icon-bg.save .bg-gray { transform: rotate(-50deg); }
+    .icon-bg.save .bg-color { transform: rotate(30deg) translate(4px, 3px); }
+
+    /* ── HR Gradient ─────────────────────────────────────── */
+    .hr-gradient {
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      height: 10px;
+      width: 100%;
+    }
+
+    /* ── Features section ────────────────────────────────── */
+    .features-section {
+      background-color: var(--features-bg);
+      color: white;
+      padding: 60px 0;
+    }
+    .features-section h1 {
+      color: rgb(229, 227, 243);
+      padding-bottom: 60px;
+    }
+    .features-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+      gap: 0;
+    }
+    .feature {
+      margin-bottom: 50px;
+      display: flex;
+      flex-direction: column;
+      padding: 0 12px;
+    }
+    .feature-container {
+      border: 1px solid rgb(116, 111, 157);
+      height: 100%;
+      transition: all .4s ease-in-out;
+    }
+    .feature:hover .feature-container {
+      transform: skew(-2deg, -2deg) scale(1.05);
+      box-shadow: rgba(0, 27, 103, .1) 0px 15px 43.65px 1.35px;
+    }
+    .feature:hover .feature-internal {
+      transform: skew(2deg, 2deg);
+    }
+    .feature-internal {
+      padding: 60px 20px 20px 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: transform .4s ease-in-out;
+    }
+    .feature-icon {
+      color: white;
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgb(116, 111, 157);
+      height: 70px; width: 70px;
+      border-radius: 50%;
+      position: absolute;
+      top: -35px;
+      left: calc(50% - 35px);
+      transition: all .3s linear;
+    }
+    .feature-title {
+      color: rgb(229, 227, 243);
+      text-align: center;
+      font-weight: 500;
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .feature-text {
+      color: white;
+      text-align: justify;
+      font-weight: 300;
+      font-size: .9rem;
+    }
+
+    /* ── Key Points ──────────────────────────────────────── */
+    .key-points { font-size: 1.5rem; }
+    .key-points ul {
+      margin: 10px;
+      list-style: none;
+      padding-left: 2em;
+    }
+    .key-points ul li { margin-bottom: 1rem; }
+    .key-points ul li::before {
       content: "\2713";
       color: var(--primary);
       font-weight: bold;
@@ -93,289 +363,741 @@
       margin-left: -2em;
     }
 
-    /* ── BottomBackground (bottom-background.scss) ──────── */
-    .bottom-bg-container {
-      position: relative;
-      padding-bottom: 70px;
-    }
-    .bottom-bg {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0; left: 0;
-      background-color: var(--bg);
-      background-image: url("data:image/svg+xml,%3Csvg width%3D%22700%22 height%3D%22225%22 viewBox%3D%220 0 1566 504%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cdefs%3E%3ClinearGradient id%3D%22g%22 gradientUnits%3D%22userSpaceOnUse%22%3E%3Cstop offset%3D%220%22 stop-color%3D%22%23a92a00%22%2F%3E%3Cstop offset%3D%221%22 stop-color%3D%22%23da462a%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath d%3D%22M-0 58 L-0 390 0 506 C810 506 1566 506 1566 506 L1566 375 810 375 182 375 375 58 Z%22 fill%3D%22url(%23g)%22 fill-opacity%3D%221%22 stroke%3D%22none%22%2F%3E%3Cpath d%3D%22M-0 5 L320 5 126 320 1566 320%22 fill%3D%22none%22 stroke%3D%22%23cecdf7%22 stroke-width%3D%222.835%22 stroke-opacity%3D%221%22 stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
-      background-repeat: no-repeat;
-      background-position: center bottom;
-      z-index: -1;
-      -webkit-box-shadow: 0 5px 10px 3px rgba(0,0,0,.3);
-              box-shadow: 0 5px 10px 3px rgba(0,0,0,.3);
-    }
-    /* left decoration */
-    .bottom-bg::before {
-      content: "";
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: calc(-50% - 349px);
-      position: absolute;
-      background-image: url("data:image/svg+xml,%3Csvg width%3D%221%22 height%3D%22225%22 viewBox%3D%220 0 1 225%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3ClinearGradient id%3D%22l%22 x1%3D%220%22 y1%3D%220%22 x2%3D%22519.978%22 y2%3D%220%22 gradientUnits%3D%22userSpaceOnUse%22%3E%3Cstop offset%3D%221e-05%22 stop-color%3D%22%23a92a00%22%2F%3E%3Cstop offset%3D%221%22 stop-color%3D%22%23da462a%22%2F%3E%3C%2FlinearGradient%3E%3Cpath fill%3D%22url(%23l)%22 stroke%3D%22none%22 d%3D%22M 0 25.9 L 0 174.1 L 0 225.9 C 362 225.9 700 225.9 700 225.9 L 700 167.4 L 362 167.4 L 81.4 167.4 L 167.6 25.9 Z%22%2F%3E%3Cpath fill%3D%22none%22 stroke%3D%22%23cecdf7%22 stroke-width%3D%221.27%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22 d%3D%22M 0 2.2 L 143 2.2 L 56.3 142.9 L 700 142.9%22%2F%3E%3C%2Fsvg%3E");
-      background-repeat: repeat-x;
-      background-position: center bottom;
-      z-index: -1;
-    }
-    /* right decoration */
-    .bottom-bg::after {
-      content: "";
-      width: calc((100% - 699px) / 2);
-      height: 100%;
-      top: 0;
-      left: calc(50% + 349px);
-      position: absolute;
-      background-image: url("data:image/svg+xml,%3Csvg width%3D%221%22 height%3D%22225%22 viewBox%3D%220 0 1 225%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3ClinearGradient id%3D%22r%22 x1%3D%22-699%22 y1%3D%220%22 x2%3D%22-179%22 y2%3D%220%22 gradientUnits%3D%22userSpaceOnUse%22%3E%3Cstop offset%3D%221e-05%22 stop-color%3D%22%23a92a00%22%2F%3E%3Cstop offset%3D%221%22 stop-color%3D%22%23da462a%22%2F%3E%3C%2FlinearGradient%3E%3Cpath fill%3D%22url(%23r)%22 stroke%3D%22none%22 d%3D%22M -699 25.9 L -699 174.1 L -699 225.9 C -337 225.9 1 225.9 1 225.9 L 1 167.4 L -337 167.4 L -617.6 167.4 L -531.4 25.9 Z%22%2F%3E%3Cpath fill%3D%22none%22 stroke%3D%22%23cecdf7%22 stroke-width%3D%221.27%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22 d%3D%22M -699 2.2 L -556 2.2 L -642.7 142.9 L 1 142.9%22%2F%3E%3C%2Fsvg%3E");
-      background-repeat: repeat-x;
-      background-position: center bottom;
-      z-index: -1;
-    }
-
-    /* ── Logo (Logo.tsx) ────────────────────────────────── */
-    .logo-wrap {
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 1;
-      width: 90px;
-      text-decoration: none;
-    }
-    .logo-icon  { display: block; width: 100%; height: 40px; margin-bottom: 8px; }
-    .logo-text  {
-      display: block;
-      font-family: 'Quicksand', sans-serif;
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.08em;
-      line-height: 1;
-    }
-
-    /* ── Hero h1 (Interest.tsx override) ────────────────── */
-    .hero-h1 {
-      color: white !important;
-      text-transform: none !important;
-      font-size: 5rem !important;
-      font-weight: 700;
-      line-height: 1.1;
-    }
-    .hero-h1 span { color: var(--primary); }
-
-    /* ── Slogan responsive (slogan.scss) ────────────────── */
-    @media (max-width: 767px)  { .hero-h1 { font-size: 4rem !important; } }
-    @media (max-width: 500px)  { .hero-h1 { font-size: 3.5rem !important; } }
-    @media (max-width: 400px)  { .hero-h1 { font-size: 2.5rem !important; } }
-
-    /* ── Hero row ───────────────────────────────────────── */
-    .hero-row { padding-bottom: 130px; }
-
-    /* ── CTA form (Subscribe replacement) ───────────────── */
-    .cta-block {
-      width: 100%;
-      padding: 3rem;
-    }
-    @media (max-width: 767px) {
-      .cta-block { padding: 1rem; }
-      .hero-row  { padding-bottom: 80px; }
-    }
-    .cta-block h4 {
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 24px;
-      font-family: 'Quicksand', sans-serif;
-    }
-    .btn-download {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--primary);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 100px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: 'Quicksand', sans-serif;
-      letter-spacing: 0.02em;
-      transition: opacity 0.2s, transform 0.2s;
-      box-shadow: 0 4px 20px rgba(218,70,42,0.35);
-    }
-    .btn-download:hover { opacity: 0.88; transform: translateY(-1px); }
-    .btn-download i { font-size: 18px; }
-
-    .btn-secondary-ghost {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      margin-top: 16px;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-      font-family: 'Quicksand', sans-serif;
-    }
-    .btn-secondary-ghost:hover { opacity: 1; }
-
-    /* store badge rows */
-    .store-badges { display: flex; flex-direction: column; gap: 12px; }
-
-    /* ── Footer (footer.scss) ───────────────────────────── */
+    /* ── Footer ──────────────────────────────────────────── */
     footer {
-      color: var(--text);
+      color: hsla(0,0%,100%,.82);
       padding: 60px 0 30px 0;
       background-color: var(--bg);
-      border-top: 1px solid rgba(255,255,255,0.08);
     }
-    footer h2, footer p, footer a, footer li { color: var(--text); }
-    footer a { font-weight: 300; text-decoration: none; transition: opacity 0.2s; }
-    footer a:hover { opacity: 0.7; }
-    footer ul { padding-left: 2em; }
-    footer ul li { margin-bottom: 8px; }
-    footer h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; font-family: 'Quicksand', sans-serif; }
-    footer p  { font-size: 0.9rem; line-height: 1.7; }
-    .footer-copy {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      font-size: 12px;
-      color: rgba(255,255,255,0.35);
-      text-align: center;
+    footer h2, footer p, footer a, footer li {
+      color: hsla(0,0%,100%,.82);
     }
-    .footer-copy a { color: rgba(255,255,255,0.35); }
-    .footer-copy a:hover { color: rgba(255,255,255,0.7); }
-
-    /* footer col spacing */
-    .px-5-md { }
-    @media (min-width: 768px) { .px-5-md { padding-left: 3rem !important; padding-right: 3rem !important; } }
-
-    /* ── Scroll indicator (ScrollDown) ─────────────────── */
-    .scroll-down {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      color: var(--text);
-      text-decoration: none;
-      animation: blinkAnim 1s linear infinite;
-      display: none;
+    footer a { font-weight: 300; text-decoration: none; }
+    footer a:hover { opacity: .75; }
+    footer ul { list-style: none; padding: 0; }
+    footer ul li { margin-bottom: 10px; }
+    footer input, footer textarea {
+      width: 100%;
+      border-radius: 4px !important;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(255,255,255,.08);
+      color: white;
+      margin-bottom: 10px;
+      font-size: .95rem;
     }
-    @keyframes blinkAnim {
-      0%   { opacity: 0; }
-      50%  { opacity: 1; }
-      100% { opacity: 0; }
+    footer input::placeholder, footer textarea::placeholder {
+      color: rgba(255,255,255,.45);
+    }
+    footer .invalid-feedback { color: #f9dddf; font-weight: 300; }
+    footer .btn-contact {
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 0;
     }
 
-    /* ── Responsive stacking ───────────────────────────── */
+    /* ── Responsive helpers ──────────────────────────────── */
     @media (max-width: 767px) {
-      .row { flex-direction: column; }
-      footer .row { flex-direction: column; gap: 32px; }
+      h1 { font-size: 2.4rem; }
+      .phone-image { align-items: center !important; }
+    }
+    @media (max-width: 575px) {
+      .faq-bubble { width: 100%; margin-left: 0; }
     }
   </style>
 </head>
 <body>
 
-<div class="home">
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  HERO                                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="bottom-background-container">
+  <div class="bottom-background"></div>
 
-  <!-- ── Hero (BottomBackground) ───────────────────────── -->
-  <div class="bottom-bg-container">
-    <div class="bottom-bg"></div>
+  <div class="container slogan-form">
+    <a id="register"></a>
 
-    <div class="container slogan-form">
-
-      <!-- Logo row (pt-4) -->
-      <div class="row pt-4">
-        <div class="col">
-          <a href="#" class="logo-wrap">
-            <!-- double-Z icon SVG (Icon.tsx) -->
-            <svg class="logo-icon" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#625990" stroke="none"
-                d="M 0.056 129.695007 L 167.087006 129.695007 L 157.942993 113.75 L 27.544998 113.75 L 72.729004 35.557999 L 10.861 35.557999 L 1.417 51.561996 L 44.867004 51.561996 Z"/>
-              <path fill="#da462a" stroke="none"
-                d="M 102.044006 15.790009 L 57.235001 93.921997 L 146.570999 93.921997 L 146.550995 93.886002 L 137.395004 77.919006 L 84.718994 77.919006 L 129.906998 -0.21701 L 31.971001 -0.21701 L 22.527 15.790009 Z"/>
+    <!-- Logo row -->
+    <div class="row pt-4 mb-3">
+      <div class="col">
+        <div class="logo-wrap">
+          <!-- Icon SVG (from Icon.tsx) -->
+          <div class="logo-icon">
+            <svg width="100%" height="100%" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <path fill="#625990" stroke="none"
+                  d="M 0.056 129.695007 L 167.087006 129.695007 L 157.942993 113.75 L 27.544998 113.75 L 72.729004 35.557999 L 10.861 35.557999 L 1.417 51.561996 L 44.867004 51.561996 Z"/>
+                <path fill="#da462a" stroke="none"
+                  d="M 102.044006 15.790009 L 57.235001 93.921997 L 146.570999 93.921997 L 146.550995 93.886002 L 137.395004 77.919006 L 84.718994 77.919006 L 129.906998 -0.21701 L 31.971001 -0.21701 L 22.527 15.790009 Z"/>
+              </g>
             </svg>
-            <!-- Luzzy text (Eazzy.tsx equivalent) -->
-            <span class="logo-text">Luzzy</span>
+          </div>
+          <!-- Brand name -->
+          <div class="logo-name">LUZZY</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero columns -->
+    <div class="row" style="padding-bottom:130px">
+      <div class="col-md-6">
+        <h1 class="hero-h1">
+          Artificial<br/>Intelligence<br/>designed for<br/><span>PROFESSIONALS</span>
+        </h1>
+      </div>
+
+      <div class="col-md-6 d-flex align-items-center">
+        <!-- Download CTA replaces the email subscription form -->
+        <div class="w-100 p-3 p-md-5">
+          <h4 class="text-white mb-4">
+            Let AI reply to your SMS messages. Download Luzzy and reclaim your time.
+          </h4>
+          <a id="download" href="#" class="btn-main btn-main-lg">
+            Download for Android
           </a>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Hero columns (paddingBottom: 130) -->
-      <div class="row hero-row">
+  <!-- Wave bottom -->
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="white"/>
+    </svg>
+  </div>
+</div>
 
-        <!-- Left col: h1 -->
-        <div class="col-md-6">
-          <div>
-            <h1 class="hero-h1">
-              <span>SMS</span> con inteligencia artificial, sincronizado con tu teléfono Android
-            </h1>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MANY QUESTIONS, ONE ANSWER                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section>
+  <a id="answer"></a>
+  <h1>MANY QUESTIONS, ONE ANSWER: <b>LUZZY APP</b></h1>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <p>
+          Now artificial intelligence will reply to your SMS for you. You only need to respond
+          the first time, and Luzzy App will take care of replying the following times.
+        </p>
+        <p>
+          But that's not all — Luzzy App can also take reservations for you without your
+          intervention. It can review your calendar, check your availability, schedule the
+          reservation, and add it to your calendar. It can also answer questions about your
+          rates.
+        </p>
+        <p>
+          You may have lost customers by not responding to a message. In other words, you may
+          have lost money. But this will no longer happen with Luzzy App.
+        </p>
+        <p>Now, pay attention to this:</p>
+        <p>
+          Let's suppose you receive 30 text messages a day. It is estimated that you spend about
+          30 seconds from when you hear the notification to when you respond to it.
+        </p>
+        <p>
+          If we multiply those 30 messages by 30 seconds, and then by 30 days, that's
+          <strong>7.5 hours</strong> of your life per month!
+        </p>
+        <p>Sounds incredible, doesn't it? Well, it is.</p>
+        <p>
+          The best part is that Luzzy App will help you manage your time better, giving you an
+          additional 8 hours approximately for whatever you wish to do. It's a win in every sense.
+        </p>
+        <div class="d-flex justify-content-center mt-4">
+          <a href="#download" class="btn-main btn-main-lg">Download Luzzy App!</a>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <!-- MockChat animated -->
+        <div class="mock-chat">
+          <div class="phone-image">
+            <img src="/images/header-phone.png" alt="Luzzy App screenshot"
+                 onerror="this.style.background='#1a1a2e';this.style.minHeight='420px';this.style.borderRadius='46px'"/>
+          </div>
+          <div class="chat-bubbles" id="chatBubbles"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  ARE YOU?                                               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="faq-section">
+  <div class="container">
+    <h1>ARE YOU?</h1>
+
+    <div class="bubbles-container">
+      <div class="bubble-container">
+        <div class="faq-bubble left">
+          Tired of receiving hundreds of messages repeating the same things over and over again?
+        </div>
+      </div>
+      <div class="bubble-container">
+        <div class="faq-bubble right">
+          Luzzy App will respond for you.
+        </div>
+      </div>
+
+      <div class="bubble-container">
+        <div class="faq-bubble left">
+          Tired of receiving silly messages?
+        </div>
+      </div>
+      <div class="bubble-container">
+        <div class="faq-bubble right">
+          Luzzy App will respond for you.
+        </div>
+      </div>
+
+      <div class="bubble-container">
+        <div class="faq-bubble left">
+          Have you stopped responding to messages because you're busy, working, or resting?
+        </div>
+      </div>
+      <div class="bubble-container">
+        <div class="faq-bubble right">
+          Luzzy App will respond for you.
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+      <a href="#download" class="btn-main btn-main-lg">Download Luzzy App!</a>
+    </div>
+    <br/><br/><br/>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  WHY                                                    -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="why-section">
+  <div class="container">
+    <a id="why"></a>
+    <h1>WHY LUZZY?</h1>
+    <div class="row g-5 justify-content-center">
+
+      <!-- Card 1: It feels human -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg time">
+            <!-- BackgroundNail gray -->
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng1" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#ffeaf3" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#ffeaf3" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng1)" stroke="none"/>
+              </svg>
+            </div>
+            <!-- BackgroundNail color -->
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc1" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#ff529a" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#af4e25" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc1)" stroke="none"/>
+              </svg>
+            </div>
+            <!-- Icon -->
+            <div class="icon-svg">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="52" width="52" xmlns="http://www.w3.org/2000/svg">
+                <path fill="none" stroke="#fff" stroke-width="2" d="M20,24 L20,19 C19.9999999,15 15.9403581,14 15,14 C18.9475,14 20,12 20,12 C20,12 16.942739,10.031 17,6 C16.942739,3 14.8497684,1 12,1 C9.01190309,1 6.91893246,3 7,6 C6.91893246,9.969 4,12 4,12 C4,12 4.91417116,14 9,14 C7.92131306,14 4,15 4,19 L4,24 M16,19 L16,24 M8,19 L8,24"/>
+              </svg>
+            </div>
+          </div>
+          <h2>It feels human</h2>
+          <div class="description">
+            The AI will answer using your own words. The first time, you must answer to teach
+            the AI. After that, the app will answer for you using your words. To make it feel
+            more authentic, the app takes its time to respond, just as you would. The client
+            will always believe it's you and not a robot.
           </div>
         </div>
+      </div>
 
-        <!-- Right col: CTA (Subscribe replacement) -->
-        <div class="col-md-6 d-flex align-items-center">
-          <div class="cta-block w-100">
-            <h4>Descarga gratis y configura tu agente de IA en menos de 5 minutos.</h4>
-            <div class="store-badges">
-              <a href="#" class="btn-download">
-                <i class="fa-brands fa-android"></i>
-                Descargar para Android
-              </a>
-              <a href="#" class="btn-secondary-ghost">
-                Ver cómo funciona
-                <i class="fa-solid fa-arrow-right"></i>
-              </a>
+      <!-- Card 2: When you want -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg time">
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng2" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#bfd1f6" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#bfd1f6" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng2)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc2" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#7d108c" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#b074ea" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc2)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="icon-svg">
+              <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="52" width="52" xmlns="http://www.w3.org/2000/svg">
+                <path fill="none" d="M0 0h24v24H0z"/>
+                <path d="M8 4h8v3.5l-2.84 2.84 1.25 1.25L18 8.01 17.99 8H18V2H6v1.17l2 2zM2.1 2.1L.69 3.51l8.9 8.9L6 16l.01.01H6V22h12v-1.17l2.49 2.49 1.41-1.41L2.1 2.1zM16 20H8v-3.5l2.84-2.84L16 18.83V20z" fill="#fff"/>
+              </svg>
+            </div>
+          </div>
+          <h2>When you want</h2>
+          <div class="description">
+            The application will answer when you program it to do so. You can disable it and
+            take control, set a schedule when you know you're not available, or instruct it to
+            respond only if you haven't replied within a certain number of minutes.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: What you want -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg time">
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng3" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#a3ccb6" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#a3ccb6" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng3)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc3" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="rgba(40,232,19,0.9)" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#264911" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc3)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="icon-svg">
+              <svg stroke="currentColor" fill="#fff" stroke-width="0" viewBox="0 0 288 512" height="52" width="52" xmlns="http://www.w3.org/2000/svg">
+                <path d="M209.2 233.4l-108-31.6C88.7 198.2 80 186.5 80 173.5c0-16.3 13.2-29.5 29.5-29.5h66.3c12.2 0 24.2 3.7 34.2 10.5 6.1 4.1 14.3 3.1 19.5-2l34.8-34c7.1-6.9 6.1-18.4-1.8-24.5C238 74.8 207.4 64.1 176 64V16c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v48h-2.5C45.8 64-5.4 118.7.5 183.6c4.2 46.1 39.4 83.6 83.8 96.6l102.5 30c12.5 3.7 21.2 15.3 21.2 28.3 0 16.3-13.2 29.5-29.5 29.5h-66.3C100 368 88 364.3 78 357.5c-6.1-4.1-14.3-3.1-19.5 2l-34.8 34c-7.1 6.9-6.1 18.4 1.8 24.5 24.5 19.2 55.1 29.9 86.5 30v48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-48.2c46.6-.9 90.3-28.6 105.7-72.7 21.5-61.6-14.6-124.8-72.5-141.7z"/>
+              </svg>
+            </div>
+          </div>
+          <h2>What you want</h2>
+          <div class="description">
+            Luzzy only answers the questions it knows. If it doesn't know the answer, you will
+            receive a notification for you to answer it. Please note that Luzzy App does not
+            answer phone calls, only text messages.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Save time -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg time">
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng4" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#eaf1ff" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#eaf1ff" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng4)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc4" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#8152FF" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#b074ea" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc4)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="icon-svg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" fill="#fff" viewBox="0 0 16 16">
+                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+              </svg>
+            </div>
+          </div>
+          <h2>Save time</h2>
+          <div class="description">
+            Stop spending 7.5 hours per month replying to repetitive messages. Luzzy handles
+            the routine so you can focus on what truly matters.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Booking -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg booking">
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng5" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#eaf1ff" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#eaf1ff" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng5)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc5" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#F64240" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#fd9800" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc5)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="icon-svg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#fff" viewBox="0 0 16 16">
+                <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+                <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+              </svg>
+            </div>
+          </div>
+          <h2>Automatic booking</h2>
+          <div class="description">
+            Luzzy can schedule appointments for you. It checks your calendar, confirms
+            availability and adds the booking automatically — even while you sleep.
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: Less costs -->
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="why">
+          <div class="icon-bg save">
+            <div class="bg-nail bg-gray">
+              <svg width="110px" height="110px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ng6" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#eaf1ff" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#eaf1ff" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#ng6)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="bg-nail bg-color">
+              <svg width="105px" height="105px" viewBox="0 0 53 53" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="nc6" gradientUnits="userSpaceOnUse" x1="30.821" y1="49.379" x2="23.629" y2="-0.287">
+                    <stop offset="0" stop-color="#8720A2" stop-opacity="1"/>
+                    <stop offset="1" stop-color="#e83eaf" stop-opacity="1"/>
+                  </linearGradient>
+                </defs>
+                <path d="M29.069 5.194 C57.381 17.183 57.339 28.643 35.505 42.659 9.653 59.253 4.355 51.897 4.081 28.011 3.748 -0.996 10.444 -2.693 29.069 5.194 Z" fill="url(#nc6)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="icon-svg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" fill="#fff" viewBox="0 0 16 16">
+                <path d="M5 6.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm1.138-1.496A6.613 6.613 0 0 1 7.964 4.5c.666 0 1.303.097 1.893.273a.5.5 0 0 0 .286-.958A7.602 7.602 0 0 0 7.964 3.5c-.734 0-1.441.103-2.102.292a.5.5 0 1 0 .276.962z"/>
+                <path d="M7.964 1.527c-2.977 0-5.571 1.704-6.32 4.125h-.55A1 1 0 0 0 .11 6.824l.254 1.46a1.5 1.5 0 0 0 1.478 1.243h.263c.3.513.688.978 1.145 1.382l-.729 2.477a.5.5 0 0 0 .48.641h2a.5.5 0 0 0 .471-.332l.482-1.351c.635.173 1.31.267 2.011.267.707 0 1.388-.095 2.028-.272l.543 1.372a.5.5 0 0 0 .465.316h2a.5.5 0 0 0 .478-.645l-.761-2.506C13.81 9.895 14.5 8.559 14.5 7.069c0-.145-.007-.29-.02-.431.261-.11.508-.266.705-.444.315.306.815.306.815-.417 0 .223-.5.223-.461-.026a.95.95 0 0 0 .09-.255.7.7 0 0 0-.202-.645.58.58 0 0 0-.707-.098.735.735 0 0 0-.375.562c-.024.243.082.48.32.654a2.112 2.112 0 0 1-.259.153c-.534-2.664-3.284-4.595-6.442-4.595zM2.516 6.26c.455-2.066 2.667-3.733 5.448-3.733 3.146 0 5.536 2.114 5.536 4.542 0 1.254-.624 2.41-1.67 3.248a.5.5 0 0 0-.165.535l.66 2.175h-.985l-.59-1.487a.5.5 0 0 0-.629-.288c-.661.23-1.39.359-2.157.359a6.558 6.558 0 0 1-2.157-.359.5.5 0 0 0-.635.304l-.525 1.471h-.979l.633-2.15a.5.5 0 0 0-.17-.534 4.649 4.649 0 0 1-1.284-1.541.5.5 0 0 0-.446-.275h-.56a.5.5 0 0 1-.492-.414l-.254-1.46h.933a.5.5 0 0 0 .488-.393z"/>
+              </svg>
+            </div>
+          </div>
+          <h2>Reduce costs</h2>
+          <div class="description">
+            Stop hiring staff just to answer repetitive messages. Luzzy handles the routine
+            communication at a fraction of the cost, 24 hours a day.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  HR GRADIENT                                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="hr-gradient"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  FEATURES                                               -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="features-section">
+  <div class="container">
+    <a id="features"></a>
+    <h1>FEATURES</h1>
+    <div class="container">
+      <div class="row g-5 features-row justify-content-center">
+
+        <!-- Booking -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm-1 1v1H3V1h10zM1 14V4h14v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z"/>
+                  <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                </svg>
+              </div>
+              <b class="feature-title">Booking</b>
+              <p class="feature-text">Luzzy can take reservations on your behalf. It checks your
+                availability and schedules appointments automatically, even while you are busy.</p>
             </div>
           </div>
         </div>
 
-      </div><!-- /hero-row -->
-    </div><!-- /container -->
-  </div><!-- /bottom-bg-container -->
-
-
-  <!-- ── Footer ─────────────────────────────────────────── -->
-  <footer id="footer">
-    <div class="container">
-      <div class="row">
-
-        <!-- Col 1: Info -->
-        <div class="col-xs-12 col-sm-6 col-md-4">
-          <h2>Luzzy App</h2>
-          <p>App SMS predeterminada para Android con agente de inteligencia artificial integrado. Responde tus mensajes, agenda citas y sincroniza en todos tus dispositivos.</p>
+        <!-- Calendar -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                </svg>
+              </div>
+              <b class="feature-title">Calendar Sync</b>
+              <p class="feature-text">Luzzy integrates with your phone calendar. New bookings are
+                added automatically and existing appointments are respected when scheduling.</p>
+            </div>
+          </div>
         </div>
 
-        <!-- Col 2: vacía (igual que eazzy) -->
-        <div class="col-xs-12 col-sm-6 col-md-4 px-5-md"></div>
+        <!-- Customizable -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5h-13z"/>
+                  <path d="M2 10h4v4H2v-4zm0-5h4v4H2V5zm5 5h4v4H7v-4zm0-5h4v4H7V5zm5 5h2v4h-2v-4zm0-5h2v4h-2V5z"/>
+                </svg>
+              </div>
+              <b class="feature-title">Customizable</b>
+              <p class="feature-text">Teach Luzzy using your own words. Every answer it gives
+                reflects your personal style. Add, edit or remove replies at any time.</p>
+            </div>
+          </div>
+        </div>
 
-        <!-- Col 3: Links -->
-        <div class="col-xs-12 col-sm-12 col-md-4 px-5-md">
-          <ul>
-            <li><a href="/privacy">Política de Privacidad</a></li>
-            <li><a href="/delete-account">Eliminar cuenta</a></li>
-          </ul>
+        <!-- Service info -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+              </div>
+              <b class="feature-title">Service Info</b>
+              <p class="feature-text">Luzzy can automatically share information about your
+                services, rates, availability and location — no manual reply needed.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                </svg>
+              </div>
+              <b class="feature-title">FAQ Handling</b>
+              <p class="feature-text">Luzzy handles the most common questions 24/7. When it
+                encounters a new question it notifies you so you can teach it the answer.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="col-12 col-sm-12 col-md-6 col-xl-6 col-xxl-4 feature">
+          <div class="feature-container">
+            <div class="feature-internal">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="white" viewBox="0 0 16 16">
+                  <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                  <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                </svg>
+              </div>
+              <b class="feature-title">You Stay in Control</b>
+              <p class="feature-text">You always see every conversation. Choose which clients
+                Luzzy responds to, pause it at any time, and override any reply manually.</p>
+            </div>
+          </div>
         </div>
 
       </div>
-
-      <p class="footer-copy">
-        © 2026 Luzzy · Todos los derechos reservados ·
-        <a href="/privacy">Privacidad</a> · <a href="/delete-account">Eliminar cuenta</a><br/>
-        La app es una herramienta de comunicación. El uso es responsabilidad exclusiva del usuario.
-      </p>
     </div>
-  </footer>
+  </div>
+</section>
 
-</div><!-- /home -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  HR GRADIENT                                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="hr-gradient"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  KEY POINTS                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="key-points">
+  <div class="container">
+    <h1>Key Points</h1>
+    <ul>
+      <li>
+        It feels like you: it uses your own words and takes as long as a person would to respond (like you).
+      </li>
+      <li>
+        Respond using your own words. The first time, you respond, and if you added it to
+        automatic replies: The second time, the AI responds on your behalf using your own words.
+      </li>
+      <li>
+        Only respond to the messages you want, those it knows the answer to, and you've added
+        for automatic response.
+      </li>
+      <li>
+        You can choose which clients you respond to and which clients the AI responds to.
+      </li>
+      <li>
+        You can disable it or schedule it to enable or disable at the hours that suit you best.
+      </li>
+      <li>
+        You won't lose clients by not responding. It can make a booking for you even while
+        you're busy.
+      </li>
+      <li>
+        It checks your calendar for availability and adds new bookings to your phone.
+      </li>
+    </ul>
+
+    <div class="d-flex justify-content-center mt-4">
+      <a href="#download" class="btn-main btn-main-lg">Download Luzzy App!</a>
+    </div>
+    <br/><br/><br/>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-4">
+        <h2>Contact</h2>
+        <p><small>Have questions? Send us a message and we'll get back to you as soon as possible.</small></p>
+        <form onsubmit="handleContact(event)">
+          <input type="text" name="name" placeholder="Your name" required/>
+          <input type="email" name="email" placeholder="Your email" required/>
+          <textarea name="message" rows="4" placeholder="Your message" required></textarea>
+          <button type="submit" class="btn-contact">Send</button>
+        </form>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 px-5"></div>
+      <div class="col-12 col-sm-12 col-md-4 px-5 mt-4 mt-md-0">
+        <ul>
+          <li><a href="/terms">Terms and Conditions</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  SCRIPTS                                                -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+  /* ── MockChat animation ─────────────────────────────────── */
+  const conversation = [
+    { type: 'user', text: 'Hi, what time are you available tomorrow?', time: '10:32' },
+    { type: 'bot',  text: 'Hi! I\'m available from 2 PM to 8 PM tomorrow. Would you like to book a session?', time: '10:32' },
+    { type: 'user', text: 'Yes! Can I book at 3 PM?', time: '10:33' },
+    { type: 'bot',  text: 'Perfect, I\'ve added your booking for tomorrow at 3 PM to my calendar. See you then!', time: '10:33' },
+    { type: 'user', text: 'What are your rates?', time: '10:34' },
+    { type: 'bot',  text: 'My rates start at $80 per hour. I\'ll send you the full details shortly.', time: '10:34' },
+    { type: 'user', text: 'Thanks!', time: '10:35' },
+  ];
+
+  const container = document.getElementById('chatBubbles');
+  let current = 0;
+
+  function addBubble() {
+    if (current >= conversation.length) return;
+    const msg = conversation[current++];
+    const div = document.createElement('div');
+    div.className = msg.type === 'user' ? 'user-bubble' : 'bot-bubble';
+    div.innerHTML =
+      (msg.type === 'bot'
+        ? '<span class="bubble-icon-bot"><svg width="14" height="14" fill="#625990" viewBox="0 0 167 130"><path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/><path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/></svg></span>'
+        : '<span class="bubble-icon-user"><svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path fill="none" stroke="white" stroke-width="2" d="M20,24 L20,19 C20,15 16,14 15,14 C19,14 20,12 20,12 C20,12 17,10 17,6 C17,3 15,1 12,1 C9,1 7,3 7,6 C7,10 4,12 4,12 C4,12 5,14 9,14 C8,14 4,15 4,19 L4,24"/></svg></span>')
+      + msg.text
+      + '<span class="bubble-time">' + msg.time + '</span>';
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    setTimeout(addBubble, current === 1 ? 500 : 1800);
+  }
+
+  // Start when MockChat enters viewport
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        observer.disconnect();
+        setTimeout(addBubble, 500);
+      }
+    });
+  }, { threshold: 0.2 });
+  observer.observe(container);
+
+  /* ── Contact form ───────────────────────────────────────── */
+  function handleContact(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Sent!';
+    btn.disabled = true;
+    setTimeout(() => { e.target.reset(); btn.textContent = 'Send'; btn.disabled = false; }, 3000);
+  }
+</script>
 
 </body>
 </html>
