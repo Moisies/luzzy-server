@@ -434,89 +434,153 @@
     }
     .btn-signin:hover { opacity: .85; }
 
-    /* ── Auth Modal ──────────────────────────────────────── */
+    /* ── Auth Modal — Elegant Edition ───────────────────────── */
     .auth-modal .modal-content {
-      border-radius: 0;
+      border-radius: 22px;
       border: none;
       overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.38), 0 8px 24px rgba(0,0,0,.18);
     }
     .auth-modal .modal-header {
-      background: var(--bg);
-      border-bottom: 3px solid var(--primary);
-      padding: 20px 24px 0;
-    }
-    .auth-modal .modal-header .modal-title {
-      display: flex;
+      background: linear-gradient(150deg, #1f1c35 0%, var(--bg) 55%, #3a2f60 100%);
+      border-bottom: none;
+      padding: 26px 28px 0;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      color: white;
-      font-weight: 700;
+      position: relative;
     }
-    .auth-modal .btn-close { filter: invert(1); }
+    .auth-modal .btn-close {
+      filter: invert(1) opacity(.55);
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      transition: opacity .2s;
+    }
+    .auth-modal .btn-close:hover { filter: invert(1) opacity(.9); }
+    .auth-modal .modal-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+    .auth-modal .modal-brand-name {
+      color: white;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 6px;
+      margin-top: 9px;
+    }
+    .auth-modal .modal-brand-tagline {
+      color: rgba(255,255,255,.45);
+      font-size: .72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
     .auth-modal .nav-tabs {
       border-bottom: none;
-      margin-top: 16px;
+      margin-top: 22px;
+      background: rgba(255,255,255,.08);
+      border-radius: 50px;
+      padding: 4px;
+      gap: 2px;
     }
     .auth-modal .nav-tabs .nav-link {
-      color: hsla(0,0%,100%,.6);
+      color: rgba(255,255,255,.5);
       font-weight: 600;
       border: none;
-      border-bottom: 3px solid transparent;
-      border-radius: 0;
-      padding: 8px 20px;
+      border-radius: 50px;
+      padding: 7px 26px;
+      font-size: .87rem;
+      letter-spacing: .2px;
+      transition: all .22s ease;
     }
     .auth-modal .nav-tabs .nav-link.active {
-      background: transparent;
-      color: white;
-      border-bottom: 3px solid var(--primary);
+      background: white;
+      color: var(--bg);
+      box-shadow: 0 2px 12px rgba(0,0,0,.22);
     }
-    .auth-modal .modal-body { padding: 28px 28px 10px; }
-    .auth-modal .modal-footer {
-      border-top: 1px solid #eee;
-      padding: 14px 28px;
+    .auth-modal .nav-tabs .nav-link:hover:not(.active) {
+      color: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.1);
     }
-    .auth-modal .form-label { font-weight: 500; color: #444; font-size: .9rem; }
+    .auth-modal .modal-header-divider {
+      height: 1px;
+      width: 100%;
+      margin-top: 20px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+    }
+    .auth-modal .modal-body {
+      padding: 28px 32px 14px;
+      background: #f8f8fb;
+    }
+    .auth-modal .modal-footer { display: none; }
+    .auth-modal .form-label {
+      font-weight: 700;
+      color: #555;
+      font-size: .78rem;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
     .auth-modal .form-control {
-      border-radius: 0 !important;
-      border: 1px solid #ddd;
-      padding: 10px 14px;
-      font-size: .95rem;
+      border-radius: 11px !important;
+      border: 1.5px solid #e6e6ef;
+      padding: 11px 14px;
+      font-size: .94rem;
+      background: white;
+      color: #222;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,.04);
     }
     .auth-modal .form-control:focus {
       border-color: var(--user-bubble);
-      box-shadow: 0 0 0 .15rem rgba(132,115,171,.25);
+      box-shadow: 0 0 0 3px rgba(132,115,171,.18);
+      background: white;
     }
     .auth-modal .btn-auth {
       background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
       border: none;
       color: white;
       font-weight: 700;
-      border-radius: 0;
-      padding: 11px 0;
+      border-radius: 13px;
+      padding: 13px 0;
       width: 100%;
-      font-size: 1rem;
+      font-size: .97rem;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 8px;
+      letter-spacing: .3px;
+      transition: transform .22s ease, box-shadow .22s ease, opacity .22s ease;
+      box-shadow: 0 4px 18px rgba(169,42,0,.32);
     }
-    .auth-modal .btn-auth:hover { opacity: .88; }
+    .auth-modal .btn-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(169,42,0,.44);
+      opacity: .93;
+    }
+    .auth-modal .btn-auth:active { transform: translateY(0); }
     .auth-modal .auth-error {
-      background: #fdecea;
-      color: #c0392b;
-      padding: 10px 14px;
-      font-size: .88rem;
+      background: #fff2f3;
+      color: #b52b27;
+      border: 1px solid #f5c6cb;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: .85rem;
       margin-top: 10px;
       display: none;
     }
     .auth-modal .auth-success {
-      background: #eafaf1;
-      color: #1e8449;
-      padding: 10px 14px;
-      font-size: .88rem;
+      background: #f0fbf5;
+      color: #1a7a45;
+      border: 1px solid #b7e4c7;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: .85rem;
       margin-top: 10px;
       display: none;
     }
-    .switch-tab { font-size: .85rem; color: #666; }
-    .switch-tab a { color: var(--h1-color); cursor: pointer; font-weight: 600; text-decoration: none; }
+    .switch-tab { font-size: .83rem; color: #999; text-align: center; margin-top: 14px; margin-bottom: 4px; }
+    .switch-tab a { color: var(--h1-color); cursor: pointer; font-weight: 700; text-decoration: none; transition: color .18s; }
     .switch-tab a:hover { color: var(--primary); }
   </style>
 </head>
@@ -558,19 +622,19 @@
     <div class="modal-content">
 
       <!-- Header with Logo + Tabs -->
-      <div class="modal-header flex-column align-items-start">
-        <div class="d-flex justify-content-between w-100 align-items-center">
-          <div class="modal-title">
-            <svg width="30" height="18" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
-              <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
-            </svg>
-            LUZZY
-          </div>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <!-- Centered brand -->
+        <div class="modal-brand">
+          <svg width="42" height="26" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+            <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
+          </svg>
+          <span class="modal-brand-name">LUZZY</span>
+          <span class="modal-brand-tagline">AI-powered SMS assistant</span>
         </div>
-        <!-- Tabs -->
-        <ul class="nav nav-tabs w-100" id="authTabs">
+        <!-- Pill tabs -->
+        <ul class="nav nav-tabs" id="authTabs">
           <li class="nav-item">
             <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane">Sign In</button>
           </li>
@@ -578,6 +642,7 @@
             <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane">Create Account</button>
           </li>
         </ul>
+        <div class="modal-header-divider"></div>
       </div>
 
       <!-- Body -->
@@ -1249,12 +1314,10 @@ async function submitLogin(e) {
     localStorage.setItem('luzzy_token', data.token);
     localStorage.setItem('luzzy_user',  JSON.stringify(data.user));
     var el = document.getElementById('loginSuccess');
-    el.textContent = 'Welcome back, ' + (data.user.displayName || data.user.email) + '!';
+    el.textContent = 'Bienvenido, ' + (data.user.displayName || data.user.email) + '!';
     el.style.display = 'block';
     form.reset();
-    setTimeout(function() {
-      bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
-    }, 1400);
+    setTimeout(function() { window.location.href = '/dashboard'; }, 900);
   } catch(err) {
     showError('loginError', err.message);
   } finally {
@@ -1288,12 +1351,10 @@ async function submitRegister(e) {
     localStorage.setItem('luzzy_token', data.token);
     localStorage.setItem('luzzy_user',  JSON.stringify(data.user));
     var el = document.getElementById('registerSuccess');
-    el.textContent = 'Account created! Welcome, ' + (data.user.displayName || data.user.email) + '!';
+    el.textContent = 'Cuenta creada! Bienvenido, ' + (data.user.displayName || data.user.email) + '!';
     el.style.display = 'block';
     form.reset();
-    setTimeout(function() {
-      bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
-    }, 1400);
+    setTimeout(function() { window.location.href = '/dashboard'; }, 900);
   } catch(err) {
     showError('registerError', err.message);
   } finally {

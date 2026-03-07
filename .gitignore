@@ -39,3 +39,5 @@ integrations/generated/prisma
 
 luzzy-7509d-firebase-adminsdk-fbsvc-2dd5c87adb.json
 luzzy-7509d-firebase-adminsdk-fbsvc-3460e67f51.json
+users-dev.json
+sessions/

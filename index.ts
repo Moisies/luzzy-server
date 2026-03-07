@@ -23,6 +23,14 @@ import {
   listAppointments,
   handleDeleteAppointment,
 } from "./controllers/appointmentsController.ts";
+import {
+  handleWhatsAppStatus,
+  handleWhatsAppQR,
+  handleWhatsAppConnect,
+  handleWhatsAppDisconnect,
+  handleWhatsAppLogout,
+} from "./controllers/whatsappController.ts";
+import { sessionManager } from "./whatsapp/sessionManager.ts";
 import { env } from "./config/env.ts";
 
 // ─── Servidor ─────────────────────────────────────────────────────────────────
@@ -60,6 +68,23 @@ const server = serve({
     "/api/appointments": {
       GET: listAppointments,
     },
+
+    // WhatsApp — gestión de sesiones desde el dashboard
+    "/api/whatsapp/status": {
+      GET: handleWhatsAppStatus,
+    },
+    "/api/whatsapp/qr": {
+      GET: handleWhatsAppQR,
+    },
+    "/api/whatsapp/connect": {
+      POST: handleWhatsAppConnect,
+    },
+    "/api/whatsapp/disconnect": {
+      POST: handleWhatsAppDisconnect,
+    },
+    "/api/whatsapp/logout": {
+      POST: handleWhatsAppLogout,
+    },
   },
 
   /**
@@ -94,6 +119,14 @@ const server = serve({
       });
     }
 
+    // Dashboard de usuario
+    if (req.method === "GET" && pathname === "/dashboard") {
+      const file = Bun.file(new URL("./public/dashboard.html", import.meta.url));
+      return new Response(file, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
     // Eliminación de cuenta
     if (req.method === "GET" && (pathname === "/delete-account" || pathname === "/eliminar-cuenta")) {
       const file = Bun.file(new URL("./public/delete-account.html", import.meta.url));
@@ -116,3 +149,6 @@ const server = serve({
 
 console.log(`🚀 Luzzy AI Agent Server corriendo en http://localhost:${server.port}`);
 console.log(`🤖 Modelo Gemini: ${env.GEMINI_MODEL}`);
+
+// Reconectar automáticamente sesiones WhatsApp guardadas en disco
+sessionManager.reconnectAll().catch(console.error);
