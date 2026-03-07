@@ -393,9 +393,246 @@
       h1 { font-size: 2.4rem; }
       .bubble { width: 100%; margin-left: 0; }
     }
+
+    /* ── Navbar ──────────────────────────────────────────── */
+    .luzzy-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: var(--bg);
+      padding: 10px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .luzzy-navbar .nav-logo { width: 36px; height: 22px; }
+    .luzzy-navbar .nav-brand {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 3px;
+      margin-left: 8px;
+    }
+    .luzzy-navbar .nav-links a {
+      color: hsla(0,0%,100%,.75);
+      text-decoration: none;
+      margin: 0 14px;
+      font-size: .9rem;
+      font-weight: 400;
+    }
+    .luzzy-navbar .nav-links a:hover { color: white; }
+    .btn-signin {
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      border: none;
+      color: white !important;
+      padding: 7px 20px;
+      font-weight: 700;
+      border-radius: 0;
+      font-size: .9rem;
+      cursor: pointer;
+    }
+    .btn-signin:hover { opacity: .85; }
+
+    /* ── Auth Modal ──────────────────────────────────────── */
+    .auth-modal .modal-content {
+      border-radius: 0;
+      border: none;
+      overflow: hidden;
+    }
+    .auth-modal .modal-header {
+      background: var(--bg);
+      border-bottom: 3px solid var(--primary);
+      padding: 20px 24px 0;
+    }
+    .auth-modal .modal-header .modal-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-weight: 700;
+    }
+    .auth-modal .btn-close { filter: invert(1); }
+    .auth-modal .nav-tabs {
+      border-bottom: none;
+      margin-top: 16px;
+    }
+    .auth-modal .nav-tabs .nav-link {
+      color: hsla(0,0%,100%,.6);
+      font-weight: 600;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      padding: 8px 20px;
+    }
+    .auth-modal .nav-tabs .nav-link.active {
+      background: transparent;
+      color: white;
+      border-bottom: 3px solid var(--primary);
+    }
+    .auth-modal .modal-body { padding: 28px 28px 10px; }
+    .auth-modal .modal-footer {
+      border-top: 1px solid #eee;
+      padding: 14px 28px;
+    }
+    .auth-modal .form-label { font-weight: 500; color: #444; font-size: .9rem; }
+    .auth-modal .form-control {
+      border-radius: 0 !important;
+      border: 1px solid #ddd;
+      padding: 10px 14px;
+      font-size: .95rem;
+    }
+    .auth-modal .form-control:focus {
+      border-color: var(--user-bubble);
+      box-shadow: 0 0 0 .15rem rgba(132,115,171,.25);
+    }
+    .auth-modal .btn-auth {
+      background: linear-gradient(90deg, var(--grad-start) 0%, var(--grad-end) 100%);
+      border: none;
+      color: white;
+      font-weight: 700;
+      border-radius: 0;
+      padding: 11px 0;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .auth-modal .btn-auth:hover { opacity: .88; }
+    .auth-modal .auth-error {
+      background: #fdecea;
+      color: #c0392b;
+      padding: 10px 14px;
+      font-size: .88rem;
+      margin-top: 10px;
+      display: none;
+    }
+    .auth-modal .auth-success {
+      background: #eafaf1;
+      color: #1e8449;
+      padding: 10px 14px;
+      font-size: .88rem;
+      margin-top: 10px;
+      display: none;
+    }
+    .switch-tab { font-size: .85rem; color: #666; }
+    .switch-tab a { color: var(--h1-color); cursor: pointer; font-weight: 600; text-decoration: none; }
+    .switch-tab a:hover { color: var(--primary); }
   </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  NAVBAR                                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<nav class="luzzy-navbar">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a href="/" class="d-flex align-items-center text-decoration-none">
+      <svg class="nav-logo" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+        <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
+      </svg>
+      <span class="nav-brand">LUZZY</span>
+    </a>
+    <div class="nav-links d-none d-md-flex">
+      <a href="#why">Why</a>
+      <a href="#features">Features</a>
+      <a href="#footer">Contact</a>
+    </div>
+    <button class="btn-signin" data-bs-toggle="modal" data-bs-target="#authModal">
+      Sign In
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  AUTH MODAL                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="modal fade auth-modal" id="authModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <!-- Header with Logo + Tabs -->
+      <div class="modal-header flex-column align-items-start">
+        <div class="d-flex justify-content-between w-100 align-items-center">
+          <div class="modal-title">
+            <svg width="30" height="18" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+              <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
+            </svg>
+            LUZZY
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs w-100" id="authTabs">
+          <li class="nav-item">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane">Sign In</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane">Create Account</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="tab-content">
+
+          <!-- LOGIN PANE -->
+          <div class="tab-pane fade show active" id="loginPane">
+            <form id="loginForm" onsubmit="submitLogin(event)">
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" placeholder="you@example.com" required/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="••••••••" required/>
+              </div>
+              <div class="auth-error" id="loginError"></div>
+              <div class="auth-success" id="loginSuccess"></div>
+              <button type="submit" class="btn-auth" id="loginBtn">Sign In</button>
+            </form>
+            <div class="switch-tab mt-3">
+              Don't have an account? <a onclick="switchToRegister()">Create one</a>
+            </div>
+          </div>
+
+          <!-- REGISTER PANE -->
+          <div class="tab-pane fade" id="registerPane">
+            <form id="registerForm" onsubmit="submitRegister(event)">
+              <div class="mb-3">
+                <label class="form-label">Name <span class="text-muted">(optional)</span></label>
+                <input type="text" class="form-control" name="displayName" placeholder="Your name"/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" placeholder="you@example.com" required/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Min. 6 characters" minlength="6" required/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="confirm" placeholder="Repeat password" required/>
+              </div>
+              <div class="auth-error" id="registerError"></div>
+              <div class="auth-success" id="registerSuccess"></div>
+              <button type="submit" class="btn-auth" id="registerBtn">Create Account</button>
+            </form>
+            <div class="switch-tab mt-3">
+              Already have an account? <a onclick="switchToLogin()">Sign in</a>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /modal-body -->
+
+    </div>
+  </div>
+</div>
 
 <!-- ScrollDown arrow (shows when hero > viewport) -->
 <a id="scroll-down" href="#answer">
@@ -961,7 +1198,98 @@ function handleContact(e) {
   btn.disabled = true;
   setTimeout(function() { e.target.reset(); btn.textContent = 'Send'; btn.disabled = false; }, 3000);
 }
+
+/* ── Auth modal helpers ────────────────────────────────── */
+function showError(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideMessages(prefix) {
+  document.getElementById(prefix + 'Error').style.display   = 'none';
+  document.getElementById(prefix + 'Success').style.display = 'none';
+}
+function switchToRegister() {
+  document.getElementById('register-tab').click();
+}
+function switchToLogin() {
+  document.getElementById('login-tab').click();
+}
+
+/* ── Login ─────────────────────────────────────────────── */
+async function submitLogin(e) {
+  e.preventDefault();
+  hideMessages('login');
+  var btn = document.getElementById('loginBtn');
+  var form = e.target;
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+  try {
+    var res = await fetch('/api/auth/web-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:    form.email.value,
+        password: form.password.value
+      })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    localStorage.setItem('luzzy_token', data.token);
+    localStorage.setItem('luzzy_user',  JSON.stringify(data.user));
+    var el = document.getElementById('loginSuccess');
+    el.textContent = 'Welcome back, ' + (data.user.displayName || data.user.email) + '!';
+    el.style.display = 'block';
+    form.reset();
+    setTimeout(function() {
+      bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+    }, 1400);
+  } catch(err) {
+    showError('loginError', err.message);
+  } finally {
+    btn.textContent = 'Sign In'; btn.disabled = false;
+  }
+}
+
+/* ── Register ──────────────────────────────────────────── */
+async function submitRegister(e) {
+  e.preventDefault();
+  hideMessages('register');
+  var btn = document.getElementById('registerBtn');
+  var form = e.target;
+  if (form.password.value !== form.confirm.value) {
+    showError('registerError', 'Passwords do not match.');
+    return;
+  }
+  btn.textContent = 'Creating…'; btn.disabled = true;
+  try {
+    var res = await fetch('/api/auth/web-register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:       form.email.value,
+        password:    form.password.value,
+        displayName: form.displayName.value || undefined
+      })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+    localStorage.setItem('luzzy_token', data.token);
+    localStorage.setItem('luzzy_user',  JSON.stringify(data.user));
+    var el = document.getElementById('registerSuccess');
+    el.textContent = 'Account created! Welcome, ' + (data.user.displayName || data.user.email) + '!';
+    el.style.display = 'block';
+    form.reset();
+    setTimeout(function() {
+      bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
+    }, 1400);
+  } catch(err) {
+    showError('registerError', err.message);
+  } finally {
+    btn.textContent = 'Create Account'; btn.disabled = false;
+  }
+}
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,92 @@
+// Prisma Schema — Luzzy AI Agent Server
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Usuario (profesional registrado) ────────────────────────────────────────
+
+model User {
+  phone             String         @id()
+  registrationToken String         @unique
+  settings          Json? // ADN + configuración guardada desde la app Android
+  passwordHash      String? // Solo usuarios web (no app Android)
+  displayName       String? // Nombre visible (registro web)
+  Messages          Messages[]
+  Appointments      Appointment[]
+  Conversations     Conversation[]
+}
+
+// ─── Mensajes legacy (conservado para compatibilidad) ─────────────────────────
+
+enum Direction {
+  IN
+  OUT
+}
+
+model Messages {
+  id                String    @id()
+  user              User      @relation(fields: [registrationToken], references: [registrationToken])
+  registrationToken String
+  direction         Direction
+  message           String
+  date              DateTime
+}
+
+// ─── Conversaciones (historial del agente IA) ─────────────────────────────────
+
+model Conversation {
+  id           String                @id @default(uuid())
+  userPhone    String // Teléfono del profesional (dueño del agente)
+  contactPhone String // Teléfono del cliente que escribe
+  user         User                  @relation(fields: [userPhone], references: [phone])
+  messages     ConversationMessage[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  @@unique([userPhone, contactPhone])
+}
+
+enum MessageRole {
+  USER // Mensaje del cliente
+  AGENT // Respuesta generada por el agente IA
+}
+
+model ConversationMessage {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String
+  timestamp      DateTime     @default(now())
+}
+
+// ─── Citas (agendadas automáticamente por el agente IA) ──────────────────────
+
+enum AppointmentStatus {
+  PENDING // Cita detectada pero pendiente de confirmar
+  CONFIRMED // Cita confirmada por el agente
+  CANCELLED // Cancelada por el usuario real
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  userPhone   String // Profesional que tiene la cita
+  clientPhone String // Cliente que agendó
+  user        User              @relation(fields: [userPhone], references: [phone])
+  service     String // Nombre del servicio acordado
+  price       String? // Precio (puede ser "A consultar")
+  fecha       String? // YYYY-MM-DD
+  hora        String? // HH:MM
+  location    String? // Lugar acordado
+  notes       String? // Notas adicionales
+  status      AppointmentStatus @default(CONFIRMED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
