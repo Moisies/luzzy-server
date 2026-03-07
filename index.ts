@@ -1,17 +1,21 @@
 /**
- * index.ts — Luzzy AI Agent Server
- *
- * Servidor Bun que actúa como agente de IA para responder mensajes SMS
- * en nombre del usuario real, usando Google Gemini + el ADN del usuario.
+ * index.ts — Luzzy Server
  *
  * Endpoints:
- *   POST   /api/register            → Registrar dispositivo Android
- *   POST   /api/auth/google-login   → Login con Google
- *   POST   /api/messages            → Procesar mensaje entrante (agente IA)
- *   GET    /api/settings            → Obtener configuración/ADN
- *   POST   /api/settings            → Actualizar configuración/ADN
- *   GET    /api/appointments        → Listar citas agendadas por el agente
- *   DELETE /api/appointments/:id    → Cancelar una cita
+ *   POST   /api/register
+ *   POST   /api/auth/google-login
+ *   POST   /api/auth/web-register
+ *   POST   /api/auth/web-login
+ *   POST   /api/messages
+ *   GET    /api/settings
+ *   POST   /api/settings
+ *   GET    /api/appointments
+ *   DELETE /api/appointments/:id
+ *   GET    /api/whatsapp/status
+ *   GET    /api/whatsapp/qr
+ *   POST   /api/whatsapp/connect
+ *   POST   /api/whatsapp/disconnect
+ *   POST   /api/whatsapp/logout
  */
 
 import { serve } from "bun";
@@ -33,13 +37,10 @@ import {
 import { sessionManager } from "./whatsapp/sessionManager.ts";
 import { env } from "./config/env.ts";
 
-// ─── Servidor ─────────────────────────────────────────────────────────────────
-
 const server = serve({
   port: env.PORT,
 
   routes: {
-    // Autenticación y registro de dispositivo
     "/api/register": {
       POST: handleRegister,
     },
@@ -52,24 +53,16 @@ const server = serve({
     "/api/auth/web-login": {
       POST: handleWebLogin,
     },
-
-    // Agente IA — procesamiento de mensajes SMS entrantes
     "/api/messages": {
       POST: handleMessages,
     },
-
-    // Configuración del usuario (ADN + preferencias generales)
     "/api/settings": {
       GET: getSettings,
       POST: updateSettings,
     },
-
-    // Citas agendadas automáticamente por el agente IA
     "/api/appointments": {
       GET: listAppointments,
     },
-
-    // WhatsApp — gestión de sesiones desde el dashboard
     "/api/whatsapp/status": {
       GET: handleWhatsAppStatus,
     },
@@ -87,55 +80,35 @@ const server = serve({
     },
   },
 
-  /**
-   * fetch() maneja rutas dinámicas y cualquier ruta no declarada arriba.
-   * Aquí procesamos:
-   *   GET  /                        → Landing page HTML
-   *   DELETE /api/appointments/:id  → Cancelar cita
-   */
   async fetch(req) {
     const url = new URL(req.url);
     const { pathname } = url;
 
-    // DELETE /api/appointments/:id → cancelar cita
     const appointmentMatch = pathname.match(/^\/api\/appointments\/([^/]+)$/);
     if (appointmentMatch && req.method === "DELETE") {
       return handleDeleteAppointment(req, appointmentMatch[1]!);
     }
 
-    // Landing page
     if (req.method === "GET" && (pathname === "/" || pathname === "/index.html")) {
       const file = Bun.file(new URL("./public/index.html", import.meta.url));
-      return new Response(file, {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
+      return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Política de privacidad
     if (req.method === "GET" && (pathname === "/privacy" || pathname === "/privacidad" || pathname === "/politicas")) {
       const file = Bun.file(new URL("./public/privacy.html", import.meta.url));
-      return new Response(file, {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
+      return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Dashboard de usuario
     if (req.method === "GET" && pathname === "/dashboard") {
       const file = Bun.file(new URL("./public/dashboard.html", import.meta.url));
-      return new Response(file, {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
+      return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Eliminación de cuenta
     if (req.method === "GET" && (pathname === "/delete-account" || pathname === "/eliminar-cuenta")) {
       const file = Bun.file(new URL("./public/delete-account.html", import.meta.url));
-      return new Response(file, {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
+      return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
-    // Health check
     if (req.method === "GET" && pathname === "/health") {
       return new Response(
         JSON.stringify({ status: "ok", server: "Luzzy AI Agent" }),
@@ -147,8 +120,7 @@ const server = serve({
   },
 });
 
-console.log(`🚀 Luzzy AI Agent Server corriendo en http://localhost:${server.port}`);
-console.log(`🤖 Modelo Gemini: ${env.GEMINI_MODEL}`);
+console.log(`Server running on http://localhost:${server.port}`);
+console.log(`Gemini model: ${env.GEMINI_MODEL}`);
 
-// Reconectar automáticamente sesiones WhatsApp guardadas en disco
 sessionManager.reconnectAll().catch(console.error);

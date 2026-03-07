@@ -1,16 +1,3 @@
-/**
- * controllers/whatsappController.ts
- * Endpoints REST para la gestión de sesiones WhatsApp desde el dashboard.
- *
- * Todos los endpoints requieren JWT (Bearer token) para identificar al usuario.
- *
- * GET  /api/whatsapp/status     → { status, connectedPhone }
- * GET  /api/whatsapp/qr         → { qr: string | null }
- * POST /api/whatsapp/connect    → Inicia sesión (genera QR)
- * POST /api/whatsapp/disconnect → Desconecta (mantiene sesión en disco)
- * POST /api/whatsapp/logout     → Desconecta + elimina sesión (logout total)
- */
-
 import { checkAuth, unauthorized } from "../utils/auth.ts";
 import { sessionManager } from "../whatsapp/sessionManager.ts";
 
@@ -20,8 +7,6 @@ function json(data: unknown, status = 200): Response {
     headers: { "Content-Type": "application/json" },
   });
 }
-
-// ─── GET /api/whatsapp/status ─────────────────────────────────────────────────
 
 export async function handleWhatsAppStatus(req: Request): Promise<Response> {
   let userPhone: string;
@@ -33,30 +18,23 @@ export async function handleWhatsAppStatus(req: Request): Promise<Response> {
   });
 }
 
-// ─── GET /api/whatsapp/qr ─────────────────────────────────────────────────────
-
 export async function handleWhatsAppQR(req: Request): Promise<Response> {
   let userPhone: string;
   try { userPhone = await checkAuth(req); } catch { return unauthorized(); }
 
-  return json({ qr: sessionManager.getQR(userPhone) });
+  return json({ qr: sessionManager.getQRDataUrl(userPhone) });
 }
-
-// ─── POST /api/whatsapp/connect ───────────────────────────────────────────────
 
 export async function handleWhatsAppConnect(req: Request): Promise<Response> {
   let userPhone: string;
   try { userPhone = await checkAuth(req); } catch { return unauthorized(); }
 
-  // No awaitar: la sesión genera QR de forma asíncrona, el cliente hace polling
   sessionManager.startSession(userPhone).catch((err) =>
-    console.error(`❌ WA error iniciando sesión de ${userPhone}:`, err)
+    console.error("WA connect error:", err)
   );
 
-  return json({ ok: true, message: "Sesión iniciada. Esperando QR..." });
+  return json({ ok: true });
 }
-
-// ─── POST /api/whatsapp/disconnect ────────────────────────────────────────────
 
 export async function handleWhatsAppDisconnect(req: Request): Promise<Response> {
   let userPhone: string;
@@ -65,8 +43,6 @@ export async function handleWhatsAppDisconnect(req: Request): Promise<Response> 
   sessionManager.stopSession(userPhone);
   return json({ ok: true });
 }
-
-// ─── POST /api/whatsapp/logout ────────────────────────────────────────────────
 
 export async function handleWhatsAppLogout(req: Request): Promise<Response> {
   let userPhone: string;

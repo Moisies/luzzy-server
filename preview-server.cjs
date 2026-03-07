@@ -114,6 +114,17 @@ http.createServer(async (req, res) => {
     }
   }
 
+  /* ── API: WhatsApp stubs (preview only) ────────────── */
+  if (method === 'GET' && url === '/api/whatsapp/status') {
+    return jsonOk(res, { status: 'disconnected', connectedPhone: null });
+  }
+  if (method === 'GET' && url === '/api/whatsapp/qr') {
+    return jsonOk(res, { qr: null });
+  }
+  if (method === 'POST' && (url === '/api/whatsapp/connect' || url === '/api/whatsapp/disconnect' || url === '/api/whatsapp/logout')) {
+    return jsonOk(res, { ok: true });
+  }
+
   /* ── Static files ─────────────────────────────────── */
   let filePath = url === '/' ? '/index.html' : url;
   if (!path.extname(filePath)) filePath = filePath + '.html';

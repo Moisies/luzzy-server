@@ -264,7 +264,7 @@
       margin-bottom: 14px;
       gap: 10px;
     }
-    #waQRBox canvas { border-radius: 8px; }
+    #waQRImg { width: 220px; height: 220px; border-radius: 8px; }
     #waQRHint {
       font-size: .8rem;
       color: #999;
@@ -415,7 +415,7 @@
 
             <!-- QR code box (shown when waiting_qr) -->
             <div id="waQRBox">
-              <canvas id="waQRCanvas"></canvas>
+              <img id="waQRImg" alt="QR WhatsApp"/>
               <p id="waQRHint">Abre WhatsApp &rarr; Dispositivos vinculados &rarr; Escanear codigo QR</p>
             </div>
 
@@ -454,8 +454,6 @@
   </div>
 </div>
 
-<!-- QR code renderer -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script>
   var token = localStorage.getItem('luzzy_token');
   var user  = JSON.parse(localStorage.getItem('luzzy_user') || 'null');
@@ -524,7 +522,7 @@
       // Render QR only when string changes (avoid flickering)
       if (statusData.status === 'waiting_qr' && qrData.qr && qrData.qr !== waLastQR) {
         waLastQR = qrData.qr;
-        QRCode.toCanvas(document.getElementById('waQRCanvas'), qrData.qr, { width: 220, margin: 1 });
+        document.getElementById('waQRImg').src = qrData.qr;
         document.getElementById('waQRBox').style.display = 'flex';
       }
 
