@@ -539,9 +539,14 @@
       <a href="#features">Features</a>
       <a href="#footer">Contact</a>
     </div>
-    <button class="btn-signin" data-bs-toggle="modal" data-bs-target="#authModal">
-      Sign In
-    </button>
+    <div class="d-flex gap-2">
+      <button class="btn-signin" style="background:transparent;border:1px solid rgba(255,255,255,.5);color:white;padding:7px 18px;font-weight:600;font-size:.9rem;cursor:pointer;" onclick="openAuthModal('login')">
+        Iniciar Sesión
+      </button>
+      <button class="btn-signin" onclick="openAuthModal('register')">
+        Registrarte
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -1197,6 +1202,13 @@ function handleContact(e) {
   btn.textContent = 'Sent!';
   btn.disabled = true;
   setTimeout(function() { e.target.reset(); btn.textContent = 'Send'; btn.disabled = false; }, 3000);
+}
+
+/* ── Open modal on specific tab ────────────────────────── */
+function openAuthModal(tab) {
+  var modal = new bootstrap.Modal(document.getElementById('authModal'));
+  modal.show();
+  document.getElementById(tab === 'register' ? 'register-tab' : 'login-tab').click();
 }
 
 /* ── Auth modal helpers ────────────────────────────────── */
