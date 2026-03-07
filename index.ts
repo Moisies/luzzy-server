@@ -16,6 +16,7 @@
 
 import { serve } from "bun";
 import { handleRegister, handleGoogleLogin } from "./controllers/authController.ts";
+import { handleWebRegister, handleWebLogin } from "./controllers/webAuthController.ts";
 import { handleMessages } from "./controllers/messagesController.ts";
 import { getSettings, updateSettings } from "./controllers/settingsController.ts";
 import {
@@ -36,6 +37,12 @@ const server = serve({
     },
     "/api/auth/google-login": {
       POST: handleGoogleLogin,
+    },
+    "/api/auth/web-register": {
+      POST: handleWebRegister,
+    },
+    "/api/auth/web-login": {
+      POST: handleWebLogin,
     },
 
     // Agente IA — procesamiento de mensajes SMS entrantes

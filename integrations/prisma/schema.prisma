@@ -16,6 +16,8 @@ model User {
   phone             String        @id()
   registrationToken String        @unique
   settings          Json?         // ADN + configuración guardada desde la app Android
+  passwordHash      String?       // Solo usuarios web (no app Android)
+  displayName       String?       // Nombre visible (registro web)
   Messages          Messages[]
   Appointments      Appointment[]
   Conversations     Conversation[]
