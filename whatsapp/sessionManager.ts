@@ -2,6 +2,7 @@ import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
   fetchLatestBaileysVersion,
+  Browsers,
   type WASocket,
 } from "@whiskeysockets/baileys";
 import { Boom } from "@hapi/boom";
@@ -9,6 +10,18 @@ import QRCode from "qrcode";
 import path from "path";
 import fs from "fs";
 import { handleWhatsAppMessage } from "./agentHandler.ts";
+
+// Baileys requires a pino-compatible logger; this no-op implementation silences all output
+const noOpLogger: any = {
+  level: "silent",
+  trace: () => {},
+  debug: () => {},
+  info: () => {},
+  warn: () => {},
+  error: (msg: any) => console.error("[WA]", msg),
+  fatal: (msg: any) => console.error("[WA FATAL]", msg),
+  child: () => noOpLogger,
+};
 
 export type SessionStatus = "disconnected" | "waiting_qr" | "connected";
 
@@ -44,8 +57,8 @@ class WhatsAppSessionManager {
       version,
       auth: state,
       printQRInTerminal: false,
-      browser: ["Luzzy AI", "Chrome", "1.0.0"],
-      logger: { level: "silent" } as any,
+      browser: Browsers.ubuntu("Chrome"),
+      logger: noOpLogger,
     });
 
     const session: Session = {
@@ -60,11 +73,13 @@ class WhatsAppSessionManager {
 
     socket.ev.on("connection.update", async ({ qr, connection, lastDisconnect }) => {
       if (qr) {
-        session.qrDataUrl = await QRCode.toDataURL(qr, { width: 280, margin: 1 });
+        console.log(`[WA] New QR for ${userPhone} (length: ${qr.length})`);
+        session.qrDataUrl = await QRCode.toDataURL(qr, { width: 300, margin: 2 });
         session.status = "waiting_qr";
       }
 
       if (connection === "open") {
+        console.log(`[WA] Connected for ${userPhone}: ${socket.user?.id}`);
         session.status = "connected";
         session.qrDataUrl = null;
         session.connectedPhone = socket.user?.id.split(":")[0] ?? null;

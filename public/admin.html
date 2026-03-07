@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Luzzy</title>
+  <style>
+    :root {
+      --bg:         #1e1b2e;
+      --sidebar:    #16132a;
+      --surface:    #ffffff;
+      --page:       #f0eff5;
+      --border:     #e8e8f0;
+      --grad-start: #a92a00;
+      --grad-end:   #da462a;
+      --purple:     #605a8c;
+      --purple-l:   #8473ab;
+      --text:       #1a1a2e;
+      --muted:      #888;
+      --danger:     #e74c3c;
+      --success:    #27ae60;
+      --warning:    #f39c12;
+      --wa:         #25D366;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--page); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    /* ── Login screen ── */
+    #loginScreen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(145deg, #1a1730, #302c44, #3d3160);
+    }
+    .login-box {
+      background: white; border-radius: 24px; padding: 44px 40px;
+      width: 360px; box-shadow: 0 24px 80px rgba(0,0,0,.4);
+      animation: fadeUp .4s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .login-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; letter-spacing: 5px; color: var(--purple); margin-bottom: 8px; }
+    .login-box h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+    .login-box p  { font-size: .85rem; color: var(--muted); margin-bottom: 28px; }
+    .login-box input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 12px 16px; font-size: .95rem; font-family: inherit;
+      outline: none; transition: border-color .2s, box-shadow .2s; margin-bottom: 14px;
+    }
+    .login-box input:focus { border-color: var(--purple-l); box-shadow: 0 0 0 3px rgba(132,115,171,.14); }
+    .btn-login {
+      width: 100%; background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      border: none; color: white; font-weight: 700; border-radius: 12px;
+      padding: 13px; font-size: .95rem; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(169,42,0,.3);
+    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(169,42,0,.4); }
+    .login-err { color: var(--danger); font-size: .82rem; margin-top: 10px; text-align: center; display: none; }
+
+    /* ── App shell ── */
+    #appShell { display: none; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 230px;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      padding: 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 22px 22px 18px;
+      color: white; font-weight: 800; font-size: 1rem; letter-spacing: 4px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-nav { flex: 1; padding: 16px 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 11px; cursor: pointer;
+      color: rgba(255,255,255,.45); font-size: .88rem; font-weight: 600;
+      transition: all .2s; margin-bottom: 4px; border: none; background: none;
+      width: 100%; text-align: left;
+    }
+    .nav-item:hover    { color: rgba(255,255,255,.8); background: rgba(255,255,255,.06); }
+    .nav-item.active   { color: white; background: rgba(255,255,255,.1); }
+    .nav-item svg      { opacity: .6; flex-shrink: 0; transition: opacity .2s; }
+    .nav-item.active svg, .nav-item:hover svg { opacity: 1; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,.06); }
+    .sidebar-secret { font-size: .72rem; color: rgba(255,255,255,.22); padding: 0 6px; }
+
+    /* Main content */
+    .main { margin-left: 230px; padding: 32px 36px 60px; }
+
+    /* Header */
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 { font-size: 1.55rem; font-weight: 800; }
+    .page-header p  { font-size: .87rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Panels ── */
+    .panel { display: none; animation: fadeUp .28s ease; }
+    .panel.active { display: block; }
+
+    /* ── KPI cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: white; border-radius: 18px; padding: 22px 22px 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.11); }
+    .kpi-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: 18px 18px 0 0;
+    }
+    .kpi-card.purple::before { background: linear-gradient(90deg, #605a8c, #8473ab); }
+    .kpi-card.red::before    { background: linear-gradient(90deg, var(--grad-start), var(--grad-end)); }
+    .kpi-card.green::before  { background: linear-gradient(90deg, #1a7a45, var(--wa)); }
+    .kpi-card.orange::before { background: linear-gradient(90deg, #c0392b, var(--warning)); }
+    .kpi-card.blue::before   { background: linear-gradient(90deg, #2980b9, #3498db); }
+    .kpi-label { font-size: .71rem; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+    .kpi-value { font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .kpi-sub   { font-size: .78rem; color: var(--muted); margin-top: 6px; }
+    .kpi-icon  { position: absolute; right: 18px; top: 22px; opacity: .07; }
+
+    /* Sessions mini-list */
+    .sessions-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+      margin-bottom: 32px;
+    }
+    .session-card {
+      background: white; border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .session-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .session-dot.connected  { background: var(--wa); }
+    .session-dot.waiting_qr { background: var(--warning); animation: blink 1.2s infinite; }
+    .session-dot.disconnected { background: #ccc; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.25} }
+    .session-info strong { font-size: .88rem; font-weight: 700; display: block; }
+    .session-info span   { font-size: .78rem; color: var(--muted); }
+
+    /* ── Users table ── */
+    .table-toolbar {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1; min-width: 200px; border: 1.5px solid var(--border); border-radius: 11px;
+      padding: 9px 14px; font-size: .88rem; font-family: inherit; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .search-box:focus { border-color: var(--purple-l); box-shadow: 0 0 0 3px rgba(132,115,171,.12); }
+    .btn-create {
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      border: none; color: white; font-weight: 700; border-radius: 11px;
+      padding: 9px 20px; font-size: .86rem; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 3px 12px rgba(169,42,0,.28);
+      white-space: nowrap;
+    }
+    .btn-create:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(169,42,0,.36); }
+
+    .table-wrap { background: white; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,.07); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: #fafafe; font-size: .7rem; font-weight: 800; color: #bbb;
+      text-transform: uppercase; letter-spacing: .7px;
+      padding: 14px 18px; text-align: left; border-bottom: 1.5px solid #f2f2f7;
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid #f6f6fb; transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafafe; }
+    tbody td { padding: 13px 18px; font-size: .87rem; vertical-align: middle; }
+
+    .user-cell { display: flex; align-items: center; gap: 10px; }
+    .user-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: .85rem; flex-shrink: 0;
+    }
+    .user-email  { font-weight: 600; font-size: .86rem; }
+    .user-name   { font-size: .77rem; color: var(--muted); }
+
+    .tag {
+      display: inline-block; font-size: .68rem; font-weight: 700; padding: 3px 9px;
+      border-radius: 20px; letter-spacing: .4px;
+    }
+    .tag.on     { background: #eaf8ee; color: #1a7a45; }
+    .tag.off    { background: #f5f5f8; color: #bbb; }
+    .tag.green  { background: #eaf8ee; color: #1a7a45; }
+    .tag.orange { background: #fff4e5; color: #c0680a; }
+    .tag.gray   { background: #f5f5f8; color: #999; }
+
+    .action-row { display: flex; gap: 6px; }
+    .btn-icon {
+      width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: #bbb; transition: all .18s;
+    }
+    .btn-icon:hover.edit   { border-color: var(--purple-l); color: var(--purple); background: rgba(132,115,171,.07); }
+    .btn-icon:hover.delete { border-color: var(--danger); color: var(--danger); background: #fff5f5; }
+
+    /* ── Drawer (edit/create) ── */
+    .drawer-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 400; display: none; opacity: 0;
+      transition: opacity .28s;
+    }
+    .drawer-overlay.open { display: flex; opacity: 1; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 420px;
+      background: white; z-index: 500;
+      transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      box-shadow: -8px 0 40px rgba(0,0,0,.18);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 22px 24px 18px; border-bottom: 1.5px solid #f2f2f7;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .drawer-header h3 { font-size: 1rem; font-weight: 700; }
+    .btn-close {
+      width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: none; cursor: pointer; font-size: 1.1rem; color: #bbb;
+      display: flex; align-items: center; justify-content: center; transition: all .18s;
+    }
+    .btn-close:hover { border-color: #ccc; color: #666; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 24px; }
+    .drawer-footer { padding: 18px 24px; border-top: 1.5px solid #f2f2f7; display: flex; gap: 10px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: .71rem; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 7px; }
+    .form-input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 11px;
+      padding: 10px 14px; font-size: .9rem; font-family: inherit; color: #333;
+      outline: none; resize: vertical; transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus { border-color: var(--purple-l); box-shadow: 0 0 0 3px rgba(132,115,171,.12); }
+
+    .btn-save {
+      flex: 1; background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      border: none; color: white; font-weight: 700; border-radius: 11px;
+      padding: 11px; font-size: .9rem; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 3px 12px rgba(169,42,0,.26);
+    }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(169,42,0,.36); }
+    .btn-cancel {
+      background: none; border: 1.5px solid var(--border); color: #888;
+      font-weight: 600; border-radius: 11px; padding: 10px 20px;
+      font-size: .88rem; cursor: pointer; transition: all .2s;
+    }
+    .btn-cancel:hover { border-color: #ccc; color: #555; }
+
+    /* ── Confirm modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      z-index: 600; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 32px 28px 24px;
+      width: 360px; box-shadow: 0 24px 60px rgba(0,0,0,.3);
+      animation: fadeUp .25s ease;
+    }
+    .modal-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .modal-box p  { font-size: .87rem; color: var(--muted); margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-danger {
+      flex: 1; background: var(--danger); border: none; color: white;
+      font-weight: 700; border-radius: 11px; padding: 11px;
+      font-size: .9rem; cursor: pointer; transition: all .2s;
+    }
+    .btn-danger:hover { background: #c0392b; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 60px 20px; color: #bbb; }
+    .empty svg { opacity: .25; margin-bottom: 14px; }
+    .empty p { font-size: .9rem; }
+
+    /* Refresh btn */
+    .btn-refresh {
+      background: none; border: 1.5px solid var(--border); color: #888;
+      border-radius: 10px; padding: 8px 14px; font-size: .82rem;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-refresh:hover { border-color: var(--purple-l); color: var(--purple); }
+    .spin { animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { width: 64px; }
+      .sidebar-brand span, .nav-item span, .sidebar-footer { display: none; }
+      .nav-item { justify-content: center; padding: 10px; }
+      .main { margin-left: 64px; padding: 24px 18px 50px; }
+      .drawer { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg width="24" height="16" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+        <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
+      </svg>
+      LUZZY
+    </div>
+    <h2>Panel de Admin</h2>
+    <p>Ingresa la clave de administrador para continuar.</p>
+    <input type="password" id="adminKeyInput" placeholder="Clave de admin" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="btn-login" onclick="doLogin()">Entrar</button>
+    <div class="login-err" id="loginErr">Clave incorrecta</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <svg width="20" height="13" viewBox="0 0 167 130" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#625990" d="M0.056 129.695L167.087 129.695L157.943 113.75L27.545 113.75L72.729 35.558L10.861 35.558L1.417 51.562L44.867 51.562Z"/>
+        <path fill="#da462a" d="M102.044 15.79L57.235 93.922L146.571 93.922L137.395 77.919L84.719 77.919L129.907-0.217L31.971-0.217Z"/>
+      </svg>
+      <span>LUZZY</span>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" onclick="showPanel('dashboard',this)">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" onclick="showPanel('users',this)">
+        <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/><path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+        <span>Usuarios</span>
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-secret" id="sidebarSecret"></div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- PANEL: Dashboard -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Metricas y estado en tiempo real de Luzzy</p>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card purple"><div class="kpi-label">Usuarios totales</div><div class="kpi-value" id="kpiUsers">—</div><div class="kpi-sub">Registrados en la plataforma</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/><path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></div>
+        <div class="kpi-card green"><div class="kpi-label">Auto respuesta ON</div><div class="kpi-value" id="kpiAutoResp">—</div><div class="kpi-sub">Bots activos respondiendo</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12z"/></svg></div>
+        <div class="kpi-card orange"><div class="kpi-label">WA conectados</div><div class="kpi-value" id="kpiWA">—</div><div class="kpi-sub">Sesiones WhatsApp activas</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326z"/></svg></div>
+        <div class="kpi-card red"><div class="kpi-label">Mensajes totales</div><div class="kpi-value" id="kpiMsgs">—</div><div class="kpi-sub">Procesados por el agente IA</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4z"/></svg></div>
+        <div class="kpi-card blue"><div class="kpi-label">Tokens Gemini</div><div class="kpi-value" id="kpiTokens">—</div><div class="kpi-sub">Tokens acumulados de todos los clientes</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5v-5A3.5 3.5 0 0 0 10.5 2h-5z"/></svg></div>
+        <div class="kpi-card purple"><div class="kpi-label">Uptime</div><div class="kpi-value" id="kpiUptime">—</div><div class="kpi-sub">Servidor corriendo</div><svg class="kpi-icon" width="52" height="52" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:.72rem;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.8px;">Sesiones WhatsApp activas</div>
+        <button class="btn-refresh" id="refreshBtn" onclick="loadDashboard()">
+          <svg id="refreshIcon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+          Actualizar
+        </button>
+      </div>
+      <div class="sessions-grid" id="sessionsGrid">
+        <div style="color:#bbb;font-size:.87rem;grid-column:1/-1;">Cargando sesiones...</div>
+      </div>
+    </div>
+
+    <!-- PANEL: Users -->
+    <div class="panel" id="panel-users">
+      <div class="page-header">
+        <h1>Usuarios</h1>
+        <p>Gestiona las cuentas de la plataforma</p>
+      </div>
+
+      <div class="table-toolbar">
+        <input class="search-box" type="text" id="searchInput" placeholder="Buscar por email o nombre..." oninput="filterUsers()">
+        <button class="btn-create" onclick="openDrawer(null)">+ Nuevo usuario</button>
+        <button class="btn-refresh" onclick="loadUsers()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+          Recargar
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Auto resp.</th>
+              <th>WhatsApp</th>
+              <th>Mensajes</th>
+              <th>Tokens est.</th>
+              <th>Ultimo acceso</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="7"><div class="empty"><p>Cargando...</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DRAWER: Create / Edit user -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h3 id="drawerTitle">Nuevo usuario</h3>
+    <button class="btn-close" onclick="closeDrawer()">&times;</button>
+  </div>
+  <div class="drawer-body">
+    <input type="hidden" id="editEmail">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" id="fEmail" placeholder="cliente@ejemplo.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nombre</label>
+      <input class="form-input" type="text" id="fName" placeholder="Nombre del usuario">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contrasena <span id="passHint" style="font-size:.75rem;color:#bbb;font-weight:400;">(dejar vacio para no cambiar)</span></label>
+      <input class="form-input" type="password" id="fPass" placeholder="Minimo 6 caracteres">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ADN del bot</label>
+      <textarea class="form-input" id="fAdn" rows="4" placeholder="Personalidad del asistente..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">
+        Auto respuesta
+        <label style="position:relative;width:40px;height:22px;cursor:pointer;">
+          <input type="checkbox" id="fAutoResp" style="opacity:0;width:0;height:0;">
+          <span id="fAutoTrack" style="position:absolute;inset:0;background:#e0e0ea;border-radius:22px;transition:.28s;"></span>
+          <span id="fAutoThumb" style="position:absolute;width:16px;height:16px;left:3px;top:3px;background:white;border-radius:50%;transition:.28s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></span>
+        </label>
+      </label>
+    </div>
+    <div id="drawerErr" style="color:var(--danger);font-size:.82rem;margin-top:8px;display:none;"></div>
+  </div>
+  <div class="drawer-footer">
+    <button class="btn-cancel" onclick="closeDrawer()">Cancelar</button>
+    <button class="btn-save" onclick="saveUser()">Guardar</button>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Eliminar usuario</h3>
+    <p id="deleteMsg">Esta accion no se puede deshacer. Se eliminara la cuenta y la sesion de WhatsApp.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-danger" onclick="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var adminKey = '';
+  var allUsers = [];
+  var deleteTarget = null;
+
+  /* ── Toggle style helper ── */
+  document.getElementById('fAutoResp').addEventListener('change', function() {
+    document.getElementById('fAutoTrack').style.background = this.checked ? '#25D366' : '#e0e0ea';
+    document.getElementById('fAutoThumb').style.transform  = this.checked ? 'translateX(18px)' : 'translateX(0)';
+  });
+
+  /* ── Login ── */
+  async function doLogin() {
+    var key = document.getElementById('adminKeyInput').value.trim();
+    if (!key) return;
+    var res = await fetch('/api/admin/stats', { headers: { 'x-admin-key': key } });
+    if (res.ok) {
+      adminKey = key;
+      sessionStorage.setItem('luzzy_admin_key', key);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appShell').style.display = 'block';
+      document.getElementById('sidebarSecret').textContent = 'Admin';
+      loadDashboard();
+      loadUsers();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  }
+
+  // Auto-login if key is in sessionStorage
+  (function() {
+    var stored = sessionStorage.getItem('luzzy_admin_key');
+    if (stored) { document.getElementById('adminKeyInput').value = stored; doLogin(); }
+  })();
+
+  function adminHeaders() {
+    return { 'x-admin-key': adminKey, 'Content-Type': 'application/json' };
+  }
+
+  /* ── Panel switching ── */
+  function showPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ── Dashboard ── */
+  async function loadDashboard() {
+    var icon = document.getElementById('refreshIcon');
+    icon.classList.add('spin');
+    try {
+      var [statsRes, usersRes] = await Promise.all([
+        fetch('/api/admin/stats', { headers: adminHeaders() }),
+        fetch('/api/admin/users', { headers: adminHeaders() }),
+      ]);
+      var stats = await statsRes.json();
+      var users = await usersRes.json();
+
+      document.getElementById('kpiUsers').textContent    = stats.totalUsers    ?? 0;
+      document.getElementById('kpiAutoResp').textContent = stats.autoRespOn    ?? 0;
+      document.getElementById('kpiWA').textContent       = stats.waConnected   ?? 0;
+      document.getElementById('kpiMsgs').textContent     = fmtNum(stats.totalMessages ?? 0);
+      document.getElementById('kpiTokens').textContent   = fmtNum(stats.totalTokens   ?? 0);
+      document.getElementById('kpiUptime').textContent   = fmtUptime(stats.uptime     ?? 0);
+
+      // Sessions list
+      var sg = document.getElementById('sessionsGrid');
+      var waUsers = users.filter(function(u) { return u.waStatus !== 'disconnected'; });
+      if (waUsers.length === 0) {
+        sg.innerHTML = '<div style="color:#bbb;font-size:.87rem;grid-column:1/-1;padding:14px 0;">Ninguna sesion activa en este momento</div>';
+      } else {
+        sg.innerHTML = waUsers.map(function(u) {
+          var dot = u.waStatus === 'connected' ? 'connected' : 'waiting_qr';
+          var lbl = u.waStatus === 'connected' ? 'Conectado' : 'Esperando QR';
+          return '<div class="session-card"><div class="session-dot ' + dot + '"></div><div class="session-info"><strong>' + esc(u.email) + '</strong><span>' + lbl + '</span></div></div>';
+        }).join('');
+      }
+    } catch(e) {}
+    icon.classList.remove('spin');
+  }
+
+  /* ── Users ── */
+  async function loadUsers() {
+    var res = await fetch('/api/admin/users', { headers: adminHeaders() });
+    allUsers = await res.json();
+    renderUsers(allUsers);
+  }
+
+  function filterUsers() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    renderUsers(allUsers.filter(function(u) {
+      return (u.email || '').toLowerCase().includes(q) || (u.displayName || '').toLowerCase().includes(q);
+    }));
+  }
+
+  function renderUsers(list) {
+    var tbody = document.getElementById('usersBody');
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>No hay usuarios</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(function(u) {
+      var initial = (u.displayName || u.email || '?').charAt(0).toUpperCase();
+      var autoTag = u.settings?.auto_respuesta_activada
+        ? '<span class="tag on">ON</span>' : '<span class="tag off">OFF</span>';
+      var waTag = u.waStatus === 'connected'
+        ? '<span class="tag green">Conectado</span>'
+        : u.waStatus === 'waiting_qr'
+        ? '<span class="tag orange">QR pendiente</span>'
+        : '<span class="tag gray">Desconectado</span>';
+      var msgs   = u.stats?.messages_total ?? 0;
+      var tokens = u.stats?.tokens_total   ?? 0;
+      var last   = u.stats?.last_active ? new Date(u.stats.last_active).toLocaleDateString('es') : '—';
+      return '<tr>' +
+        '<td><div class="user-cell"><div class="user-avatar">' + esc(initial) + '</div><div><div class="user-email">' + esc(u.email) + '</div><div class="user-name">' + esc(u.displayName || '—') + '</div></div></div></td>' +
+        '<td>' + autoTag + '</td>' +
+        '<td>' + waTag + '</td>' +
+        '<td>' + fmtNum(msgs) + '</td>' +
+        '<td>' + fmtNum(tokens) + '</td>' +
+        '<td>' + last + '</td>' +
+        '<td><div class="action-row">' +
+          '<button class="btn-icon edit" title="Editar" onclick="openDrawer(' + JSON.stringify(JSON.stringify(u)) + ')"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg></button>' +
+          '<button class="btn-icon delete" title="Eliminar" onclick="openDeleteModal(\'' + esc(u.email) + '\')"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  /* ── Drawer ── */
+  function openDrawer(userJson) {
+    var u = userJson ? JSON.parse(userJson) : null;
+    document.getElementById('drawerTitle').textContent = u ? 'Editar usuario' : 'Nuevo usuario';
+    document.getElementById('editEmail').value = u ? u.email : '';
+    document.getElementById('fEmail').value    = u ? u.email : '';
+    document.getElementById('fEmail').disabled = !!u;
+    document.getElementById('fName').value     = u ? (u.displayName || '') : '';
+    document.getElementById('fPass').value     = '';
+    document.getElementById('fAdn').value      = u ? (u.settings?.adn || '') : '';
+    document.getElementById('passHint').style.display = u ? 'inline' : 'none';
+    var autoOn = u ? !!u.settings?.auto_respuesta_activada : false;
+    document.getElementById('fAutoResp').checked = autoOn;
+    document.getElementById('fAutoTrack').style.background = autoOn ? '#25D366' : '#e0e0ea';
+    document.getElementById('fAutoThumb').style.transform  = autoOn ? 'translateX(18px)' : 'translateX(0)';
+    document.getElementById('drawerErr').style.display = 'none';
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+
+  async function saveUser() {
+    var editEmail = document.getElementById('editEmail').value;
+    var isEdit    = !!editEmail;
+    var email     = isEdit ? editEmail : document.getElementById('fEmail').value.trim();
+    var name      = document.getElementById('fName').value.trim();
+    var pass      = document.getElementById('fPass').value;
+    var adn       = document.getElementById('fAdn').value.trim();
+    var autoResp  = document.getElementById('fAutoResp').checked;
+    var errEl     = document.getElementById('drawerErr');
+
+    if (!email) { errEl.textContent = 'El email es requerido'; errEl.style.display = 'block'; return; }
+    if (!isEdit && !pass) { errEl.textContent = 'La contrasena es requerida para nuevos usuarios'; errEl.style.display = 'block'; return; }
+
+    var body = { displayName: name, settings: { adn, auto_respuesta_activada: autoResp } };
+    if (pass) body.password = pass;
+    if (!isEdit) body.email = email;
+
+    var url    = isEdit ? '/api/admin/users/' + encodeURIComponent(email) : '/api/admin/users';
+    var method = isEdit ? 'PATCH' : 'POST';
+
+    try {
+      var res = await fetch(url, { method, headers: adminHeaders(), body: JSON.stringify(body) });
+      if (res.ok) {
+        closeDrawer();
+        loadUsers();
+        loadDashboard();
+      } else {
+        var err = await res.json();
+        errEl.textContent = err.error || 'Error al guardar';
+        errEl.style.display = 'block';
+      }
+    } catch(e) {
+      errEl.textContent = 'Error de conexion'; errEl.style.display = 'block';
+    }
+  }
+
+  /* ── Delete ── */
+  function openDeleteModal(email) {
+    deleteTarget = email;
+    document.getElementById('deleteMsg').textContent = 'Se eliminara la cuenta de "' + email + '" y su sesion de WhatsApp. Esta accion no se puede deshacer.';
+    document.getElementById('deleteModal').classList.add('open');
+  }
+  function closeDeleteModal() {
+    deleteTarget = null;
+    document.getElementById('deleteModal').classList.remove('open');
+  }
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    await fetch('/api/admin/users/' + encodeURIComponent(deleteTarget), { method: 'DELETE', headers: adminHeaders() });
+    closeDeleteModal();
+    loadUsers();
+    loadDashboard();
+  }
+
+  /* ── Utils ── */
+  function fmtNum(n) { return Number(n).toLocaleString('es'); }
+  function fmtUptime(s) {
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+  }
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

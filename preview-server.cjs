@@ -8,11 +8,14 @@ const http   = require('http');
 const fs     = require('fs');
 const path   = require('path');
 const crypto = require('crypto');
+const QRCode = require('qrcode');
 
-const PORT      = 4000;
+const PORT      = parseInt(process.env.PORT || '4000');
 const publicDir = path.join(__dirname, 'public');
 const usersFile = path.join(__dirname, 'users-dev.json');
-const JWT_SECRET = 'luzzy-dev-secret-key';
+const JWT_SECRET = 'dev-secret';
+
+const waState = { status: 'disconnected', qr: null, connectedPhone: null };
 
 const mime = {
   '.html': 'text/html; charset=utf-8',
@@ -116,12 +119,23 @@ http.createServer(async (req, res) => {
 
   /* ── API: WhatsApp stubs (preview only) ────────────── */
   if (method === 'GET' && url === '/api/whatsapp/status') {
-    return jsonOk(res, { status: 'disconnected', connectedPhone: null });
+    return jsonOk(res, { status: waState.status, connectedPhone: waState.connectedPhone });
   }
   if (method === 'GET' && url === '/api/whatsapp/qr') {
-    return jsonOk(res, { qr: null });
+    return jsonOk(res, { qr: waState.qr });
   }
-  if (method === 'POST' && (url === '/api/whatsapp/connect' || url === '/api/whatsapp/disconnect' || url === '/api/whatsapp/logout')) {
+  if (method === 'POST' && url === '/api/whatsapp/connect') {
+    waState.status = 'waiting_qr';
+    waState.connectedPhone = null;
+    QRCode.toDataURL('luzzy-preview-qr-' + Date.now(), { width: 280, margin: 1 }, (err, url) => {
+      if (!err) waState.qr = url;
+    });
+    return jsonOk(res, { ok: true });
+  }
+  if (method === 'POST' && (url === '/api/whatsapp/disconnect' || url === '/api/whatsapp/logout')) {
+    waState.status = 'disconnected';
+    waState.qr = null;
+    waState.connectedPhone = null;
     return jsonOk(res, { ok: true });
   }
 

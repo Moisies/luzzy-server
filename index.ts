@@ -34,6 +34,13 @@ import {
   handleWhatsAppDisconnect,
   handleWhatsAppLogout,
 } from "./controllers/whatsappController.ts";
+import {
+  handleAdminStats,
+  handleAdminListUsers,
+  handleAdminCreateUser,
+  handleAdminUpdateUser,
+  handleAdminDeleteUser,
+} from "./controllers/adminController.ts";
 import { sessionManager } from "./whatsapp/sessionManager.ts";
 import { env } from "./config/env.ts";
 
@@ -78,6 +85,13 @@ const server = serve({
     "/api/whatsapp/logout": {
       POST: handleWhatsAppLogout,
     },
+    "/api/admin/stats": {
+      GET: handleAdminStats,
+    },
+    "/api/admin/users": {
+      GET:  handleAdminListUsers,
+      POST: handleAdminCreateUser,
+    },
   },
 
   async fetch(req) {
@@ -87,6 +101,17 @@ const server = serve({
     const appointmentMatch = pathname.match(/^\/api\/appointments\/([^/]+)$/);
     if (appointmentMatch && req.method === "DELETE") {
       return handleDeleteAppointment(req, appointmentMatch[1]!);
+    }
+
+    const adminUserMatch = pathname.match(/^\/api\/admin\/users\/(.+)$/);
+    if (adminUserMatch) {
+      if (req.method === "PATCH")  return handleAdminUpdateUser(req, adminUserMatch[1]!);
+      if (req.method === "DELETE") return handleAdminDeleteUser(req, adminUserMatch[1]!);
+    }
+
+    if (req.method === "GET" && pathname === "/admin") {
+      const file = Bun.file(new URL("./public/admin.html", import.meta.url));
+      return new Response(file, { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     if (req.method === "GET" && (pathname === "/" || pathname === "/index.html")) {
