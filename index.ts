@@ -35,6 +35,12 @@ import {
   handleWhatsAppLogout,
 } from "./controllers/whatsappController.ts";
 import {
+  handleBillingStatus,
+  handleCreateCheckout,
+  handleBillingPortal,
+  handleWebhook,
+} from "./controllers/billingController.ts";
+import {
   handleAdminStats,
   handleAdminListUsers,
   handleAdminCreateUser,
@@ -84,6 +90,18 @@ const server = serve({
     },
     "/api/whatsapp/logout": {
       POST: handleWhatsAppLogout,
+    },
+    "/api/billing/status": {
+      GET: handleBillingStatus,
+    },
+    "/api/billing/checkout": {
+      POST: handleCreateCheckout,
+    },
+    "/api/billing/portal": {
+      POST: handleBillingPortal,
+    },
+    "/api/billing/webhook": {
+      POST: handleWebhook,
     },
     "/api/admin/stats": {
       GET: handleAdminStats,

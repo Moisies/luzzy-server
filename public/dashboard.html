@@ -533,6 +533,84 @@
       background: rgba(96,90,140,.1); color: var(--purple);
       font-size: .78rem; font-weight: 700; padding: 4px 14px; border-radius: 20px;
     }
+    .plan-chip.pro {
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      color: white;
+    }
+
+    /* ── Billing / Upgrade ── */
+    .upgrade-banner {
+      background: linear-gradient(135deg, #1a1730 0%, #302c44 60%, #3d3160 100%);
+      border-radius: 20px;
+      padding: 28px 28px 26px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 24px rgba(0,0,0,.14);
+    }
+    .upgrade-banner.hidden { display: none; }
+    .upgrade-text h3 { color: white; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .upgrade-text p  { color: rgba(255,255,255,.5); font-size: .85rem; }
+    .upgrade-features { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .upgrade-feat {
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.7);
+      font-size: .78rem; font-weight: 600;
+      padding: 5px 12px; border-radius: 20px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .btn-upgrade {
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      border: none; color: white; font-weight: 800;
+      border-radius: 13px; padding: 13px 30px; font-size: .92rem;
+      cursor: pointer; white-space: nowrap;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 18px rgba(169,42,0,.38);
+      flex-shrink: 0;
+    }
+    .btn-upgrade:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(169,42,0,.48); }
+
+    .pro-banner {
+      background: linear-gradient(135deg, #0a3d20, #1a6b3a);
+      border-radius: 20px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .pro-banner.hidden { display: none; }
+    .pro-banner-text strong { color: white; font-size: .95rem; display: block; margin-bottom: 3px; }
+    .pro-banner-text span   { color: rgba(255,255,255,.55); font-size: .82rem; }
+    .btn-portal {
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: white; font-weight: 600; border-radius: 10px;
+      padding: 9px 20px; font-size: .84rem; cursor: pointer;
+      transition: all .2s; white-space: nowrap;
+    }
+    .btn-portal:hover { background: rgba(255,255,255,.2); }
+
+    /* Lock overlay on cards */
+    .card-lock {
+      position: absolute; inset: 0; border-radius: 20px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(3px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; z-index: 10;
+    }
+    .card-lock.hidden { display: none; }
+    .lock-icon { font-size: 1.8rem; opacity: .4; }
+    .lock-text { font-size: .82rem; color: #666; font-weight: 600; text-align: center; padding: 0 20px; }
+    .btn-lock-upgrade {
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      border: none; color: white; font-weight: 700;
+      border-radius: 10px; padding: 9px 22px; font-size: .84rem;
+      cursor: pointer; transition: transform .2s;
+    }
+    .btn-lock-upgrade:hover { transform: translateY(-1px); }
 
     /* Profile big card */
     .profile-hero {
@@ -628,10 +706,40 @@
 
   <!-- ── TAB 1: SERVICIOS ── -->
   <div class="tab-panel active" id="panel-servicios">
+
+    <!-- Banner upgrade (free users) -->
+    <div class="upgrade-banner" id="upgradeBanner">
+      <div class="upgrade-text">
+        <h3>Activa tu plan Pro</h3>
+        <p>Desbloquea el bot de SMS y WhatsApp con respuestas automaticas 24/7.</p>
+        <div class="upgrade-features">
+          <span class="upgrade-feat">&#10003; Bot SMS ilimitado</span>
+          <span class="upgrade-feat">&#10003; Bot WhatsApp</span>
+          <span class="upgrade-feat">&#10003; Agenda de citas IA</span>
+          <span class="upgrade-feat">&#10003; Soporte prioritario</span>
+        </div>
+      </div>
+      <button class="btn-upgrade" onclick="startCheckout()">Suscribirme ahora &rarr;</button>
+    </div>
+
+    <!-- Banner plan activo (pro users) -->
+    <div class="pro-banner hidden" id="proBanner">
+      <div class="pro-banner-text">
+        <strong>&#10003; Plan Pro activo</strong>
+        <span id="proExpiry">Todos los servicios habilitados</span>
+      </div>
+      <button class="btn-portal" onclick="openPortal()">Gestionar suscripcion</button>
+    </div>
+
     <div class="services-grid">
 
       <!-- SMS -->
       <div class="service-card sms">
+        <div class="card-lock hidden" id="smsLock">
+          <span class="lock-icon">&#128274;</span>
+          <p class="lock-text">Activa tu plan Pro para usar el bot de SMS</p>
+          <button class="btn-lock-upgrade" onclick="startCheckout()">Activar ahora</button>
+        </div>
         <div class="svc-icon purple">
           <svg width="24" height="24" viewBox="0 0 16 16" fill="rgb(96,90,140)">
             <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
@@ -648,6 +756,11 @@
 
       <!-- WhatsApp -->
       <div class="service-card wa">
+        <div class="card-lock hidden" id="waLock">
+          <span class="lock-icon">&#128274;</span>
+          <p class="lock-text">Activa tu plan Pro para usar el bot de WhatsApp</p>
+          <button class="btn-lock-upgrade" onclick="startCheckout()">Activar ahora</button>
+        </div>
         <div class="svc-icon green">
           <svg width="24" height="24" viewBox="0 0 16 16" fill="#25D366">
             <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
@@ -781,7 +894,7 @@
         <div class="account-card-header">Informacion de cuenta</div>
         <div class="info-row"><span class="info-key">Email</span><span class="info-val" id="accountEmail">—</span></div>
         <div class="info-row"><span class="info-key">Nombre</span><span class="info-val" id="accountName">—</span></div>
-        <div class="info-row"><span class="info-key">Plan</span><span class="plan-chip">Gratis</span></div>
+        <div class="info-row"><span class="info-key">Plan</span><span class="plan-chip" id="acctPlanChip">Gratis</span></div>
       </div>
 
       <!-- Bot status -->
@@ -1029,6 +1142,81 @@
   }
 
   if (token) loadSettings();
+
+  /* ── Billing ──────────────────────────────────── */
+  var currentPlan = 'free';
+
+  async function loadBillingStatus() {
+    try {
+      var res = await fetch('/api/billing/status', { headers: authHeaders() });
+      if (handleUnauthorized(res)) return;
+      if (!res.ok) return;
+      var sub = await res.json();
+      applyPlanUI(sub);
+    } catch(e) {}
+  }
+
+  function applyPlanUI(sub) {
+    var isPro = sub && sub.status === 'active' && sub.plan === 'pro';
+    currentPlan = isPro ? 'pro' : 'free';
+
+    // Banners
+    document.getElementById('upgradeBanner').classList.toggle('hidden', isPro);
+    document.getElementById('proBanner').classList.toggle('hidden', !isPro);
+
+    if (isPro && sub.currentPeriodEnd) {
+      var d = new Date(sub.currentPeriodEnd);
+      document.getElementById('proExpiry').textContent = 'Activo hasta ' + d.toLocaleDateString('es');
+    }
+
+    // Lock overlays
+    document.getElementById('smsLock').classList.toggle('hidden', isPro);
+    document.getElementById('waLock').classList.toggle('hidden', isPro);
+
+    // Plan chip en Mi cuenta
+    var chip = document.getElementById('acctPlanChip');
+    if (chip) {
+      chip.textContent = isPro ? 'Pro' : 'Gratis';
+      chip.className   = isPro ? 'plan-chip pro' : 'plan-chip';
+    }
+
+    // Deshabilitar boton WA si no es pro
+    var waBtn = document.getElementById('waConnectBtn');
+    if (waBtn && !isPro) {
+      waBtn.disabled = true;
+      waBtn.style.opacity = '.4';
+      waBtn.title = 'Activa tu plan Pro para conectar WhatsApp';
+    }
+  }
+
+  async function startCheckout() {
+    try {
+      var res = await fetch('/api/billing/checkout', { method: 'POST', headers: authHeaders() });
+      if (handleUnauthorized(res)) return;
+      var data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch(e) { alert('Error al iniciar el pago. Intenta de nuevo.'); }
+  }
+
+  async function openPortal() {
+    try {
+      var res = await fetch('/api/billing/portal', { method: 'POST', headers: authHeaders() });
+      if (handleUnauthorized(res)) return;
+      var data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch(e) { alert('Error al abrir el portal. Intenta de nuevo.'); }
+  }
+
+  // Detectar retorno desde Stripe
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('activated') === '1') {
+      history.replaceState({}, '', '/dashboard');
+      loadBillingStatus();
+    }
+  })();
+
+  if (token) loadBillingStatus();
 </script>
 </body>
 </html>
